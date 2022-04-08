@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ReadyActivity">
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/groundtile2" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AF000000"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="48dp" />
+
+    <ImageView
+        android:id="@+id/backArrow"
+        android:layout_width="85dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="28dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:onClick="backButtonClick"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/backarrow" />
+
+    <ImageView
+        android:id="@+id/startGame"
+        android:layout_width="112dp"
+        android:layout_height="71dp"
+        android:layout_marginTop="624dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:onClick="startButtonClick"
+        app:layout_constraintEnd_toStartOf="@+id/imageView4"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/imageView4"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/startgame" />
+
+    <TextView
+        android:id="@+id/dpsText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:fontFamily="@font/customfont"
+        android:text="DPS"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="30dp"
+        app:layout_constraintEnd_toStartOf="@+id/imageView4"
+        app:layout_constraintStart_toEndOf="@+id/imageView4"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/dpsText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="60dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/customfont"
+        android:onClick="resetButtonClick"
+        android:text="RESET\nSELECTIONS"
+        android:textColor="@color/gray"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@+id/imageView9"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/readyInfoText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="352dp"
+        android:fontFamily="@font/customfont"
+        android:text="Hold and drag up to select heroes!"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toStartOf="@+id/imageView4"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/imageView4"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/healerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="114dp"
+        android:layout_marginTop="208dp"
+        android:layout_marginEnd="40dp"
+        android:fontFamily="@font/customfont"
+        android:text="HEALER"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="30dp"
+        app:layout_constraintEnd_toStartOf="@+id/tankText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tankText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="208dp"
+        android:layout_marginEnd="124dp"
+        android:fontFamily="@font/customfont"
+        android:text="TANK"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/healerText"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/dpsFrame"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="16dp"
+        android:background="#4Fd3d3d3"
+        app:layout_constraintEnd_toStartOf="@+id/imageView4"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toEndOf="@+id/imageView4"
+        app:layout_constraintTop_toBottomOf="@+id/dpsText">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/healerFrame"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="104dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="25dp"
+        android:background="#4Fd3d3d3"
+        app:layout_constraintEnd_toStartOf="@+id/tankFrame"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/healerText">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/tankFrame"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="104dp"
+        android:background="#4Fd3d3d3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/healerFrame"
+        app:layout_constraintTop_toBottomOf="@+id/tankText">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/characterFrame1"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="69dp"
+        android:layout_marginTop="390dp"
+        android:layout_marginEnd="16dp"
+        android:background="#4Fd3d3d3"
+        app:layout_constraintEnd_toStartOf="@+id/characterFrame2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></ImageView>
+
+    <ImageView
+        android:id="@+id/dpsCharacter"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="69dp"
+        android:layout_marginTop="390dp"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/damageidle"
+        app:layout_constraintEnd_toStartOf="@+id/characterFrame2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></ImageView>
+
+    <ImageView
+        android:id="@+id/characterFrame2"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="390dp"
+        android:background="#4Fd3d3d3"
+        app:layout_constraintEnd_toStartOf="@+id/characterFrame3"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/characterFrame1"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/healerCharacter"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="390dp"
+        android:src="@drawable/healeridle"
+        app:layout_constraintEnd_toStartOf="@+id/characterFrame3"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/characterFrame1"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/characterFrame3"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="390dp"
+        android:layout_marginEnd="70dp"
+        android:src="#4Fd3d3d3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/characterFrame2"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/tankCharacter"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="390dp"
+        android:layout_marginEnd="70dp"
+        android:src="@drawable/tankidle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/characterFrame2"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/characterFrame4"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="69dp"
+        android:layout_marginTop="485dp"
+        android:layout_marginEnd="16dp"
+        android:background="#4Fd3d3d3"
+        app:layout_constraintEnd_toStartOf="@+id/characterFrame5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/characterFrame5"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="485dp"
+        android:background="#4Fd3d3d3"
+        app:layout_constraintEnd_toStartOf="@+id/characterFrame6"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/characterFrame4"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/characterFrame6"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="485dp"
+        android:layout_marginEnd="70dp"
+        android:background="#4Fd3d3d3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/characterFrame5"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/imageView9"
+        android:layout_width="25dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="244dp"
+        android:layout_marginTop="68dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="resetButtonClick"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/cross" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
