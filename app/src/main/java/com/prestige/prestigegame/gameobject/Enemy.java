@@ -99,8 +99,8 @@ import java.util.List;
  * The Enemy class is an extension of a Circle, which is an extension of a GameObject
  */
 public class Enemy extends Circle {
-    private static final double SPEED_PIXELS_PER_SECOND = Player.SPEED_PIXELS_PER_SECOND*0.7;
-    private static final double MAX_SPEED = SPEED_PIXELS_PER_SECOND / GameLoop.MAX_UPS;
+    private double SPEED_PIXELS_PER_SECOND = Player.SPEED_PIXELS_PER_SECOND*0.7;
+    private double MAX_SPEED = SPEED_PIXELS_PER_SECOND / GameLoop.MAX_UPS;
     private static final double SPAWNS_PER_MINUTE = 180;
     private static final double SPAWNS_PER_SECOND = SPAWNS_PER_MINUTE/80.0;
     private static final double UPDATES_PER_SPAWN = GameLoop.MAX_UPS/SPAWNS_PER_SECOND;
@@ -143,7 +143,11 @@ public class Enemy extends Circle {
             this.hitPoints = enemyLevel + 1;
             this.damage = enemyLevel*2 + 5;
         }
+        if(this.enemyLevel > 5 && this.enemyLevel <= 10){
+            this.SPEED_PIXELS_PER_SECOND = Player.SPEED_PIXELS_PER_SECOND * 0.725;
+        }
         if(this.enemyLevel > 10){
+            this.SPEED_PIXELS_PER_SECOND = Player.SPEED_PIXELS_PER_SECOND * 0.75;
             this.hitPoints = enemyLevel*2;
             this.damage = enemyLevel*3;
         }
@@ -169,12 +173,12 @@ public class Enemy extends Circle {
 
         final Typeface font = ResourcesCompat.getFont(context, R.font.customfont);
         levelPaint.setColor(Color.WHITE);
-        levelPaint.setTextSize(40);
+        levelPaint.setTextSize(35);
         levelPaint.setTextAlign(Paint.Align.CENTER);
         levelPaint.setTypeface(font);
 
         strokePaint.setColor(Color.BLACK);
-        strokePaint.setTextSize(40);
+        strokePaint.setTextSize(35);
         strokePaint.setTextAlign(Paint.Align.CENTER);
         strokePaint.setTypeface(font);
         strokePaint.setStyle(Paint.Style.STROKE);
@@ -226,15 +230,15 @@ public class Enemy extends Circle {
 
         if (enemyAnimator.flipped){
             canvas.drawOval((float) gameDisplay.gameToDisplayCoordinatesX(positionX)-10,
-                    (float) gameDisplay.gameToDisplayCoordinatesY(positionY)+45,
-                    (float) gameDisplay.gameToDisplayCoordinatesX(positionX)+40,
-                    (float) gameDisplay.gameToDisplayCoordinatesY(positionY)+55,
+                    (float) gameDisplay.gameToDisplayCoordinatesY(positionY)+20,
+                    (float) gameDisplay.gameToDisplayCoordinatesX(positionX)+30,
+                    (float) gameDisplay.gameToDisplayCoordinatesY(positionY)+35,
                     shadow);
         } else {
-            canvas.drawOval((float) gameDisplay.gameToDisplayCoordinatesX(positionX)-40,
-                    (float) gameDisplay.gameToDisplayCoordinatesY(positionY)+45,
+            canvas.drawOval((float) gameDisplay.gameToDisplayCoordinatesX(positionX)-30,
+                    (float) gameDisplay.gameToDisplayCoordinatesY(positionY)+20,
                     (float) gameDisplay.gameToDisplayCoordinatesX(positionX)+10,
-                    (float) gameDisplay.gameToDisplayCoordinatesY(positionY)+55,
+                    (float) gameDisplay.gameToDisplayCoordinatesY(positionY)+35,
                     shadow);
         }
 
@@ -253,8 +257,8 @@ public class Enemy extends Circle {
         if(this.enemyLevel > 10){
             levelPaint.setColor(Color.parseColor("#FF6666"));
         }
-        canvas.drawText(enemyLevel, (float)gameDisplay.gameToDisplayCoordinatesX(positionX)+40, (float)gameDisplay.gameToDisplayCoordinatesY(positionY)-10, strokePaint);
-        canvas.drawText(enemyLevel, (float)gameDisplay.gameToDisplayCoordinatesX(positionX)+40, (float)gameDisplay.gameToDisplayCoordinatesY(positionY)-10, levelPaint);
+        canvas.drawText(enemyLevel, (float)gameDisplay.gameToDisplayCoordinatesX(positionX)+20, (float)gameDisplay.gameToDisplayCoordinatesY(positionY)-5, strokePaint);
+        canvas.drawText(enemyLevel, (float)gameDisplay.gameToDisplayCoordinatesX(positionX)+20, (float)gameDisplay.gameToDisplayCoordinatesY(positionY)-5, levelPaint);
     }
 
     public void update() {

@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
+    <color name="blackTint">#AF000000</color>
     <color name="colorAccent">#000000</color>
     <color name="player">#FF0000</color>
     <color name="enemy">#00FFFF</color>

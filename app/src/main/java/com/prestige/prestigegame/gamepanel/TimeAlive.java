@@ -24,7 +24,8 @@ public class TimeAlive {
     private final double UPS = GameLoop.MAX_UPS;
     private double timeCounter = 0;
     private double secondsToMinus = 0;
-    private double finalSeconds = 0;
+    public int finalSeconds = 0;
+    public int minutes = 0;
     final Typeface font;
 
     public TimeAlive(Context context) {
@@ -40,16 +41,16 @@ public class TimeAlive {
 
     public void drawTime(Canvas canvas){
         double time = Math.round(timeCounter);
-        int minutes = (int)(time/UPS/60);
+        minutes = (int)(time/UPS/60);
         int seconds = (int)(time/UPS);
-        finalSeconds = seconds - secondsToMinus;
+        finalSeconds = (int)(seconds - secondsToMinus);
         if (finalSeconds >= 60){
             secondsToMinus += 60;
         }
         if (minutes >= 60){
             minutes = 0;
         }
-        String timeAliveText = String.format("%02d:%02d", minutes, (int)finalSeconds);
+        String timeAliveText = String.format("%02d:%02d", minutes, finalSeconds);
 
         Paint timePaint = new Paint();
         timePaint.setTextSize(125);

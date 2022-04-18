@@ -84,7 +84,6 @@ public class HealerAnimator {
         }
     }
     public void getLevelUpText(int healerLevel) {
-        Log.i("TANKLEVEL", String.valueOf(healerLevel));
         if (healerLevel < 1) {
             levelUpMsg = "-1s Healing Cool-down";
         }

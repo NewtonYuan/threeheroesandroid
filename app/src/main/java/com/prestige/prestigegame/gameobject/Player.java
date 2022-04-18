@@ -37,11 +37,11 @@ import java.util.TimerTask;
  * The player class is an extension of a Circle, which is an extension of a GameObject
  */
 public class Player extends Circle {
-    public static final double SPEED_PIXELS_PER_SECOND = 400.0;
+    public static final double SPEED_PIXELS_PER_SECOND = 480.0;
     private static final double MAX_SPEED = SPEED_PIXELS_PER_SECOND / GameLoop.MAX_UPS;
     public int MAX_HEALTH_POINTS = 50;
     private Joystick joystick;
-    private HealthBar healthBar;
+    public HealthBar healthBar;
     private int healthPoints = MAX_HEALTH_POINTS;
     private TankAnimator tankAnimator;
     private DamageAnimator damageAnimator;
@@ -96,18 +96,18 @@ public class Player extends Circle {
         screenWidth = context.getResources().getDisplayMetrics().widthPixels;
         screenHeight = context.getResources().getDisplayMetrics().heightPixels;
 
-        imgPositionX = screenWidth/2-75;
-        imgPositionY = screenHeight/2-75;
+        imgPositionX = screenWidth/2-50;
+        imgPositionY = screenHeight/2-50;
         characterList = new CharacterList(context);
 
         final Typeface font = ResourcesCompat.getFont(context, R.font.customfont);
         levelPaint.setColor(Color.WHITE);
-        levelPaint.setTextSize(50);
+        levelPaint.setTextSize(40);
         levelPaint.setTextAlign(Paint.Align.CENTER);
         levelPaint.setTypeface(font);
 
         strokePaint.setColor(Color.BLACK);
-        strokePaint.setTextSize(50);
+        strokePaint.setTextSize(40);
         strokePaint.setTextAlign(Paint.Align.CENTER);
         strokePaint.setTypeface(font);
         strokePaint.setStyle(Paint.Style.STROKE);
@@ -159,30 +159,28 @@ public class Player extends Circle {
         Bitmap tankBmp = characterList.getTankBmp();
 
         //Shadows
-        canvas.drawOval(screenWidth/2-125, screenHeight/2+145, screenWidth/2-25, screenHeight/2+170, shadow);
-        canvas.drawOval(screenWidth/2+25, screenHeight/2+145, screenWidth/2+125, screenHeight/2+170, shadow);
-        canvas.drawOval(screenWidth/2-50, screenHeight/2+15, screenWidth/2+50, screenHeight/2+40, shadow);
+        canvas.drawOval(screenWidth/2-25, screenHeight/2-10, screenWidth/2+25, screenHeight/2+10, shadow);
+        canvas.drawOval(screenWidth/2-75, screenHeight/2+90, screenWidth/2-25, screenHeight/2+110, shadow);
+        canvas.drawOval(screenWidth/2+25, screenHeight/2+90, screenWidth/2+75, screenHeight/2+110, shadow);
 
         if (!invincibilityMode){
-            damageAnimator.draw(canvas, imgPositionX, imgPositionY-80, this, null);
-            healerAnimator.draw(canvas, imgPositionX-80, imgPositionY+50, this, null);
-            tankAnimator.draw(canvas, imgPositionX+80, imgPositionY+80, this, null);
+            damageAnimator.draw(canvas, imgPositionX, imgPositionY-50, this, null);
+            healerAnimator.draw(canvas, imgPositionX-50, imgPositionY+50, this, null);
+            tankAnimator.draw(canvas, imgPositionX+50, imgPositionY+50, this, null);
         } else {
-            damageAnimator.draw(canvas, imgPositionX, imgPositionY-80, this, invincibilityPaint);
-            healerAnimator.draw(canvas, imgPositionX-80, imgPositionY+50, this, invincibilityPaint);
-            tankAnimator.draw(canvas, imgPositionX+80, imgPositionY+80, this, invincibilityPaint);
+            damageAnimator.draw(canvas, imgPositionX, imgPositionY-50, this, invincibilityPaint);
+            healerAnimator.draw(canvas, imgPositionX-50, imgPositionY+50, this, invincibilityPaint);
+            tankAnimator.draw(canvas, imgPositionX+50, imgPositionY+50, this, invincibilityPaint);
         }
 
+        canvas.drawText(damageLevel, imgPositionX+80, imgPositionY-20, strokePaint);
+        canvas.drawText(damageLevel, imgPositionX+80, imgPositionY-20, levelPaint);
 
-        canvas.drawText(damageLevel, imgPositionX+130, imgPositionY-55, strokePaint);
-        canvas.drawText(damageLevel, imgPositionX+130, imgPositionY-55, levelPaint);
+        canvas.drawText(healerLevel, imgPositionX+30, imgPositionY+80, strokePaint);
+        canvas.drawText(healerLevel, imgPositionX+30, imgPositionY+80, levelPaint);
 
-        canvas.drawText(healerLevel, imgPositionX+50, imgPositionY+100, strokePaint);
-        canvas.drawText(healerLevel, imgPositionX+50, imgPositionY+100, levelPaint);
-
-        canvas.drawText(tankLevel, imgPositionX+200, imgPositionY+100, strokePaint);
-        canvas.drawText(tankLevel, imgPositionX+200, imgPositionY+100, levelPaint);
-        healthBar.draw(canvas, gameDisplay);
+        canvas.drawText(tankLevel, imgPositionX+130, imgPositionY+80, strokePaint);
+        canvas.drawText(tankLevel, imgPositionX+130, imgPositionY+80, levelPaint);
     }
 
     public int getHealthPoint() {

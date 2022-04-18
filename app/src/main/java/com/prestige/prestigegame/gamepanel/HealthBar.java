@@ -31,8 +31,8 @@ public class HealthBar {
 
     public HealthBar(Context context, Player player) {
         this.player = player;
-        this.width = 150;
-        this.height = 30;
+        this.width = 100;
+        this.height = 20;
         this.margin = 2;
 
         this.borderPaint = new Paint();
@@ -60,7 +60,7 @@ public class HealthBar {
 
     public void draw(Canvas canvas, GameDisplay gameDisplay) {
         float x = (float) player.getPositionX();
-        float y = (float) player.getPositionY()+250;
+        float y = (float) player.getPositionY()+180;
         float distanceToPlayer = 30;
         healthPointPercentage = (float) player.getHealthPoint()/player.MAX_HEALTH_POINTS;
         getHealthColor();

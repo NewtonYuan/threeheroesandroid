@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 
@@ -18,8 +19,12 @@ public class Paused {
     private int screenWidth;
     private int screenHeight;
     private Paint backBox;
+    public Bitmap initialResumeButton;
+    private Bitmap initialQuitButton;
     public Bitmap resumeButton;
     private Bitmap quitButton;
+    private float height;
+    private float scale;
     private float resumeButtonX;
     private float resumeButtonY;
     private float quitButtonX;
@@ -37,8 +42,17 @@ public class Paused {
 
         BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
         bitmapOptions.inScaled = false;
-        resumeButton = BitmapFactory.decodeResource(context.getResources(), R.drawable.resumebutton, bitmapOptions);
-        quitButton = BitmapFactory.decodeResource(context.getResources(), R.drawable.quit, bitmapOptions);
+        initialResumeButton = BitmapFactory.decodeResource(context.getResources(), R.drawable.resumebutton, bitmapOptions);
+        initialQuitButton = BitmapFactory.decodeResource(context.getResources(), R.drawable.quit, bitmapOptions);
+
+        height = initialResumeButton.getHeight();
+        scale = ((float)(screenHeight/15.54)/height);
+
+        Matrix matrix = new Matrix();
+        matrix.postScale(scale, scale);
+
+        resumeButton = Bitmap.createBitmap(initialResumeButton, 0, 0, initialResumeButton.getWidth(), (int) height, matrix, false);
+        quitButton = Bitmap.createBitmap(initialQuitButton, 0, 0, initialQuitButton.getWidth(), initialQuitButton.getHeight(), matrix, false);
     }
 
     public void draw(Canvas canvas) {
@@ -50,7 +64,7 @@ public class Paused {
         int color = ContextCompat.getColor(context, R.color.white);
         gameOverPaint.setColor(color);
         gameOverPaint.setTypeface(font);
-        float textSize = 100;
+        float textSize = scale*100;
         gameOverPaint.setTextSize(textSize);
         gameOverPaint.setTextAlign(Paint.Align.CENTER);
 

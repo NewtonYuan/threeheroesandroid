@@ -1,13 +1,17 @@
 package com.prestige.prestigegame;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.prestige.prestigegame.graphics.DamageAnimator;
 import com.prestige.prestigegame.graphics.HealerAnimator;
@@ -24,6 +28,9 @@ public class HeroesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_heroes);
+
+        ImageView background = (ImageView) findViewById(R.id.background);
+        background.setColorFilter(ContextCompat.getColor(this, R.color.blackTint), PorterDuff.Mode.SRC_OVER);
         MainActivity.bgmPlayer.start();
 
     }

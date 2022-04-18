@@ -117,7 +117,6 @@ public class GameLoop extends Thread{
 
     public void resumeLoop(){
         isPaused = false;
-        Log.i("Paused", "Yes");
     }
 
     public void restartLoop(){

@@ -86,5 +86,38 @@
         app:layout_constraintStart_toEndOf="@+id/imageView11"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!--<TextView
+        android:id="@+id/tutorialText"
+        android:layout_width="199dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="28dp"
+        android:fontFamily="@font/customfont"
+        android:text="Hey! Your first time playing the game? Want a tutorial?"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="tutorialClick"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tutorialButton"
+        android:layout_width="105dp"
+        android:layout_height="82dp"
+        android:layout_marginStart="224dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/customfont"
+        android:text="START TUTORIAL"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="30dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="tutorialClick"
+        app:layout_constraintStart_toStartOf="@+id/imageView11"
+        app:layout_constraintTop_toTopOf="parent" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

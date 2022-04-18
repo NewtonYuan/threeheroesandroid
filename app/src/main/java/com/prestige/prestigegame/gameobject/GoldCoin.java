@@ -74,9 +74,9 @@ public class GoldCoin extends Circle {
                 null
         );
         canvas.drawOval((float) gameDisplay.gameToDisplayCoordinatesX(positionX),
+                (float) gameDisplay.gameToDisplayCoordinatesY(positionY)+45,
+                (float) gameDisplay.gameToDisplayCoordinatesX(positionX)+40,
                 (float) gameDisplay.gameToDisplayCoordinatesY(positionY)+55,
-                (float) gameDisplay.gameToDisplayCoordinatesX(positionX)+50,
-                (float) gameDisplay.gameToDisplayCoordinatesY(positionY)+65,
                 shadow);
     }
 

@@ -72,10 +72,7 @@ public class LevelUp {
     }
 
     public void draw(Canvas canvas) {
-        Log.i("Scale", String.valueOf(screenHeight));
         final Typeface font = ResourcesCompat.getFont(context, R.font.customfont);
-        Log.i("ScreenHeight", String.valueOf(screenWidth));
-        Log.i("ScreenHeight", String.valueOf(optionsBmp.getWidth()));
 
         String gameOverText = "Choose One";
         tankAnimator.getLevelUpText(player.tankLevel);

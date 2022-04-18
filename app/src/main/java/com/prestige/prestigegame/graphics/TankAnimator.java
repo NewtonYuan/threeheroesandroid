@@ -80,7 +80,6 @@ public class TankAnimator {
         }
     }
     public void getLevelUpText(int tankLevel) {
-        Log.i("TANKLEVEL", String.valueOf(tankLevel));
         if (tankLevel < 2) {
             levelUpMsg = "+5HP";
         }

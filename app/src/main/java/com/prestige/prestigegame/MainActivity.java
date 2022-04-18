@@ -3,7 +3,9 @@ package com.prestige.prestigegame;
 import android.animation.Animator;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -15,6 +17,10 @@ import android.widget.ImageButton;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.games.GamesSignInClient;
+import com.google.android.gms.games.PlayGames;
+import com.google.android.gms.games.PlayGamesSdk;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 /**
  * MainActivity is the entry point to our application.
@@ -25,6 +31,8 @@ public class MainActivity extends Activity {
     int maxVolume = 50;
     float log1=(float)(Math.log(maxVolume-40)/Math.log(maxVolume));
     private boolean toPauseMusic = true;
+    private static final int RC_LEADERBOARD_UI = 9004;
+    public boolean tutorialActivated = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +47,13 @@ public class MainActivity extends Activity {
 
         bgmPlayer = MediaPlayer.create(MainActivity.this, R.raw.gbgm);
         bgmPlayer.setLooping(true);
+
+        SharedPreferences settings = this.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        if(settings.getBoolean("firstLaunch", true)){
+
+        } else {
+
+        }
     }
 
     @Override
@@ -69,18 +84,27 @@ public class MainActivity extends Activity {
     }
 
     public void leaderboardsButtonClick (View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("This area is still in development!")
-                .setTitle("Under Construction");
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        showLeaderboard();
     }
 
     public void recordsButtonClick (View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("This area is still in development!")
-                .setTitle("Under Construction");
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        startActivity(new Intent(MainActivity.this, RecordsActivity.class));
+        toPauseMusic = false;
+    }
+
+    public void tutorialClick (View view) {
+        startActivity(new Intent(MainActivity.this, RecordsActivity.class));
+        toPauseMusic = false;
+    }
+
+    private void showLeaderboard() {
+        PlayGames.getLeaderboardsClient(this)
+                .getLeaderboardIntent(getString(R.string.leaderboard_id))
+                .addOnSuccessListener(new OnSuccessListener<Intent>() {
+                    @Override
+                    public void onSuccess(Intent intent) {
+                        startActivityForResult(intent, RC_LEADERBOARD_UI);
+                    }
+                });
     }
 }

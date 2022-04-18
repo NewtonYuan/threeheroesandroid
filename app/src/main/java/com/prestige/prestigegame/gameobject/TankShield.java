@@ -73,26 +73,26 @@ public class TankShield extends Circle {
         if (activated) {
             if (firstPhase){
                 canvas.drawBitmap(tankShield,
-                        (float) screenWidth/2-250,
-                        (float) screenHeight/2-220,
+                        (float) screenWidth/2-150,
+                        (float) screenHeight/2-140,
                         shieldPaint
                 );
             } if (secondPhase){
                 canvas.drawBitmap(tankShieldYellow,
-                        (float) screenWidth/2-250,
-                        (float) screenHeight/2-220,
+                        (float) screenWidth/2-150,
+                        (float) screenHeight/2-140,
                         shieldPaint
                 );
             } if (thirdPhase){
                 canvas.drawBitmap(tankShieldOrange,
-                        (float) screenWidth/2-250,
-                        (float) screenHeight/2-220,
+                        (float) screenWidth/2-150,
+                        (float) screenHeight/2-140,
                         shieldPaint
                 );
             } if (fourthPhase){
                 canvas.drawBitmap(tankShieldRed,
-                        (float) screenWidth/2-250,
-                        (float) screenHeight/2-220,
+                        (float) screenWidth/2-150,
+                        (float) screenHeight/2-140,
                         shieldPaint
                 );
             }

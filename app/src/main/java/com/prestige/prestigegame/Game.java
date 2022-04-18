@@ -14,6 +14,7 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
@@ -32,6 +33,7 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.gms.games.PlayGames;
 import com.prestige.prestigegame.gameobject.Circle;
 import com.prestige.prestigegame.gameobject.BronzeCoin;
 import com.prestige.prestigegame.gameobject.DamageExplosion;
@@ -116,6 +118,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     private final int initialEnemyDamage = 5;
     private int enemyDamage = initialEnemyDamage;
     public boolean isPaused = false;
+    public boolean isPausedButton = false;
     private EnemyAnimator enemyAnimator;
     private DamageAnimator damageAnimator;
     private HealerAnimator healerAnimator;
@@ -131,11 +134,15 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     private int explosiveTimeCounter = 0;
     private int enemyNumberTimeCounter = 0;
     private int enemyLevelUpCounter = 0;
+    private int totalEnemiesDefeated = 0;
+    private int totalCoinsCollected = 0;
+    private int totalEXPGained = 0;
     private final double multiShotDelay = UPS/3;
     private TimeAlive timeAlive;
     private Activity gameActivity;
     public int playerHP;
     public boolean adShown = false;
+
 
     public void checkResumeTimer(){
         new java.util.Timer().schedule(
@@ -174,16 +181,16 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         healerAnimator = new HealerAnimator(context);
         enemyAnimator = new EnemyAnimator(context);
         damageAnimator = new DamageAnimator(context);
-        player = new Player(context, joystick, 0, 0, 130, tankAnimator, damageAnimator, healerAnimator, progressBar);
-        tankShield = new TankShield(context, player, 0, 0, 200);
+        player = new Player(context, joystick, 0, 0, 75, tankAnimator, damageAnimator, healerAnimator, progressBar);
+        tankShield = new TankShield(context, player, 0, 0, 125);
         tankKnockBack = new TankKnockBack(context, player, 0, 0, 400);
         healerFreeze = new HealerFreeze(context, player, 0, 0, 100);
         levelUp = new LevelUp(context, tankAnimator, damageAnimator, healerAnimator, player);
-        bronzeCoin = new BronzeCoin(getContext(), player, 0, 0, 25);
-        silverCoin = new SilverCoin(getContext(), player, 0, 0, 25);
-        goldCoin = new GoldCoin(getContext(), player, 0, 0, 25);
+        bronzeCoin = new BronzeCoin(getContext(), player, 0, 0, 20);
+        silverCoin = new SilverCoin(getContext(), player, 0, 0, 20);
+        goldCoin = new GoldCoin(getContext(), player, 0, 0, 20);
         damageExplosion = new DamageExplosion(context, player, 0,0, 125);
-        enemy = new Enemy(getContext(), player, 0, 0, 50, enemyAnimator, 1);
+        enemy = new Enemy(getContext(), player, 0, 0, 30, enemyAnimator, 1);
 
         // Initialize display and center it around the player
         ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -211,34 +218,26 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
             case MotionEvent.ACTION_POINTER_DOWN:
                 JSX = (int) event.getX();
                 JSY = (int) event.getY();
-                if (JSY >= levelUp.getLowestPosition()){
-                    if (JSY >= player.getPositionY()){
-                        if (joystick.isPressed((double) event.getX(), (double) event.getY())) {
-                            // Joystick is pressed in this event -> setIsPressed(true) and store pointer id
-                            joystickPointerId = event.getPointerId(event.getActionIndex());
-                            joystick.setIsPressed(true);
-                        }
-                    }
+                if (joystick.isPressed((double) event.getX(), (double) event.getY())) {
+                    // Joystick is pressed in this event -> setIsPressed(true) and store pointer id
+                    joystickPointerId = event.getPointerId(event.getActionIndex());
+                    joystick.setIsPressed(true);
                 }
                 return true;
             case MotionEvent.ACTION_MOVE:
-                if (JSY >= screenHeight/5*4-200){
-                    if (!isPaused){
-                        // Joystick was pressed previously and is now moved
-                        joystick.setActuator((double) event.getX(), (double) event.getY());
-                    }
+                if (!isPaused){
+                    // Joystick was pressed previously and is now moved
+                    joystick.setActuator((double) event.getX(), (double) event.getY());
                 }
                 return true;
 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
-                if (JSY >= screenHeight/5*4-200) {
-                    if (!isPaused) {
-                        if (joystickPointerId == event.getPointerId(event.getActionIndex())) {
-                            // joystick pointer was let go off -> setIsPressed(false) and resetActuator()
-                            joystick.setIsPressed(false);
-                            joystick.resetActuator();
-                        }
+                if (!isPaused) {
+                    if (joystickPointerId == event.getPointerId(event.getActionIndex())) {
+                        // joystick pointer was let go off -> setIsPressed(false) and resetActuator()
+                        joystick.setIsPressed(false);
+                        joystick.resetActuator();
                     }
                 }
                 return true;
@@ -311,15 +310,14 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         damageExplosion.drawExplosion(canvas);
 
         // Draw game panels
-        if (JSY >= screenHeight/5*4-200){
-            joystick.draw(canvas);
-        }
+        joystick.draw(canvas);
 
         progressBar.draw(canvas);
         pauseButton.draw(canvas, touchX, touchY);
 
         tankShield.drawTankShield(canvas);
         timeAlive.drawTime(canvas);
+        player.healthBar.draw(canvas, gameDisplay);
 
         // Draw Game over if the player is dead
         if (player.getHealthPoint() <= 0) {
@@ -329,11 +327,13 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         if (pauseButton.isClicked(touchX, touchY) && player.getHealthPoint() > 0){
             paused.draw(canvas);
             isPaused = true;
+            isPausedButton = true;
             pause();
         }
 
         if (progressBar.levelUpped){
-            Log.i("WAITAMINUTE", "");
+            touchX = 0;
+            touchY = 0;
             levelUp.draw(canvas);
             isPaused = true;
             pause();
@@ -357,9 +357,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         // Update game state
-        if (JSY >= screenHeight/5*4-200){
-            joystick.update(JSX, JSY);
-        }
+        joystick.update(JSX, JSY);
         player.update();
         tankShield.update();
         tankKnockBack.update();
@@ -383,7 +381,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Spawn enemy
         if(enemy.readyToSpawn()) {
             if(enemyAnimator.enemyList.toArray().length <= enemy.maxEnemies){
-                enemyAnimator.enemyList.add(new Enemy(getContext(), player, enemy.getNewPositionX(), enemy.getNewPositionY(), 50, enemyAnimator, enemy.getEnemyLevel()));
+                enemyAnimator.enemyList.add(new Enemy(getContext(), player, enemy.getNewPositionX(), enemy.getNewPositionY(), 30, enemyAnimator, enemy.getEnemyLevel()));
             }
             if (enemy.updatesUntilNextSpawn >= 5)
             enemy.updatesUntilNextSpawn -= 1;
@@ -399,17 +397,17 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Spawn coin
         if(BronzeCoin.readyToSpawn()) {
             if(bronzeCoinList.toArray().length <= 20) {
-                bronzeCoinList.add(new BronzeCoin(getContext(), player, bronzeCoin.getNewPositionX(), bronzeCoin.getNewPositionY(), 25));
+                bronzeCoinList.add(new BronzeCoin(getContext(), player, bronzeCoin.getNewPositionX(), bronzeCoin.getNewPositionY(), 20));
             }
         }
         if(SilverCoin.readyToSpawn()) {
             if(silverCoinList.toArray().length <= 5) {
-                silverCoinList.add(new SilverCoin(getContext(), player, silverCoin.getNewPositionX(), silverCoin.getNewPositionY(), 25));
+                silverCoinList.add(new SilverCoin(getContext(), player, silverCoin.getNewPositionX(), silverCoin.getNewPositionY(), 20));
             }
         }
         if(GoldCoin.readyToSpawn()) {
             if(goldCoinList.toArray().length <= 1) {
-                goldCoinList.add(new GoldCoin(getContext(), player, silverCoin.getNewPositionX(), silverCoin.getNewPositionY(), 25));
+                goldCoinList.add(new GoldCoin(getContext(), player, silverCoin.getNewPositionX(), silverCoin.getNewPositionY(), 20));
             }
         }
 
@@ -490,6 +488,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
             Enemy enemy = iteratorEnemy.next();
             if (enemy.finishedDying){
                 iteratorEnemy.remove();
+                totalEnemiesDefeated++;
                 enemy.finishedDying = false;
                 continue;
             }
@@ -498,12 +497,14 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                     // Remove enemy if it collides with the player
                     tankShield.checkShield();
                     iteratorEnemy.remove();
+                    totalEnemiesDefeated++;
                     continue;
                 }
             }
             if (Circle.isColliding(enemy, player)) {
                 // Remove enemy if it collides with the player
                 iteratorEnemy.remove();
+                totalEnemiesDefeated++;
                 if (player.toggleInvincible){
                 } else {
                     player.setHealthPoint(player.getHealthPoint() - enemy.damage);
@@ -601,6 +602,8 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 iteratorBronzeCoin.remove();
                 progressBar.setProgressPoints(progressBar.getProgressPoints() + 1);
                 bronzeCoinSoundPlayer.start();
+                totalCoinsCollected++;
+                totalEXPGained += 1;
                 continue;
             }
             if (coin.getPositionX() >= player.getPositionX()+screenWidth*3 ||
@@ -619,6 +622,8 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 iteratorSilverCoin.remove();
                 progressBar.setProgressPoints(progressBar.getProgressPoints() + 3);
                 silverCoinSoundPlayer.start();
+                totalCoinsCollected++;
+                totalEXPGained += 2;
                 continue;
             }
             if (coin.getPositionX() >= player.getPositionX()+screenWidth*3 ||
@@ -637,6 +642,8 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 iteratorGoldCoin.remove();
                 progressBar.setProgressPoints(progressBar.getProgressPoints() + 10);
                 goldCoinSoundPlayer.start();
+                totalCoinsCollected++;
+                totalEXPGained += 3;
                 continue;
             }
             if (coin.getPositionX() >= player.getPositionX()+screenWidth*3 ||
@@ -664,10 +671,13 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void checkResume() {
-        if (isPaused) {
-            if (paused.resumeButtonClicked(touchX, touchY)){
+        if (isPausedButton) {
+            if (paused.resumeButtonClicked(touchX, touchY)) {
                 resume();
+                isPausedButton = false;
             }
+        }
+        if (isPaused){
             if (progressBar.levelUpped) {
                 if (levelUp.optionOneClicked(touchX, touchY)){
                     resume();
@@ -735,25 +745,25 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 Runnable myRunnable = new Runnable() {
                     @Override
                     public void run() {
-                        ((GameActivity)getContext()).showInterstitial();
-                    }
-                };
-                mainHandler.post(myRunnable);
-            }
-        } else {
-            if (paused.quitButtonClicked(touchX, touchY) && isPaused){
-                Handler mainHandler = new Handler(getContext().getMainLooper());
-
-                Runnable myRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        ((GameActivity)getContext()).showInterstitial();
+                        ((GameActivity)getContext()).returnToSelectionScreen();
                     }
                 };
                 mainHandler.post(myRunnable);
             }
         }
-    }
+        if (paused.quitButtonClicked(touchX, touchY) && isPausedButton){
+            isPausedButton = false;
+            Handler mainHandler = new Handler(getContext().getMainLooper());
+
+            Runnable myRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    ((GameActivity)getContext()).showInterstitial();
+                }
+            };
+            mainHandler.post(myRunnable);
+            }
+        }
 
     public void revivePlayer(){
         player.setHealthPoint(player.MAX_HEALTH_POINTS);
@@ -762,8 +772,49 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void checkStopped(){
         if (player.getHealthPoint() <= 0) {
             gameLoop.pauseLoop();
+            SharedPreferences prefs = getContext().getSharedPreferences("highScores", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+
+            int highestMin = prefs.getInt("highScoreMin", 0);
+            int highestSec = prefs.getInt("highScoreSec", 0);
+            if (timeAlive.minutes*60 + timeAlive.finalSeconds > highestMin*60 + highestSec){
+                editor.putInt("highScoreMin", timeAlive.minutes);
+                editor.putInt("highScoreSec", timeAlive.finalSeconds);
+                PlayGames.getLeaderboardsClient(gameActivity)
+                        .submitScore(getResources().getString(R.string.leaderboard_id), (timeAlive.minutes*60 + timeAlive.finalSeconds)*1000);
+            }
+
+            int totalEnemies = prefs.getInt("totalEnemiesDefeated", 0);
+            editor.putInt("totalEnemiesDefeated", totalEnemies+totalEnemiesDefeated);
+
+            int highestDPS = prefs.getInt("highestDPSLevel", 0);
+            if (player.damageLevel > highestDPS) {
+                editor.putInt("highestDPSLevel", player.damageLevel);
+            }
+
+            int highestHealer = prefs.getInt("highestHealerLevel", 0);
+            if (player.healerLevel > highestHealer) {
+                editor.putInt("highestHealerLevel", player.healerLevel);
+            }
+
+            int highestTank = prefs.getInt("highestTankLevel", 0);
+            if (player.tankLevel > highestTank) {
+                editor.putInt("highestTankLevel", player.tankLevel);
+            }
+
+            int totalCoins = prefs.getInt("totalCoinsCollected", 0);
+            editor.putInt("totalCoinsCollected", totalCoins+totalCoinsCollected);
+
+            int totalEXP = prefs.getInt("totalEXPGained", 0);
+            editor.putInt("totalEXPGained", totalEXP+totalEXPGained);
+
+            int highestCombined = prefs.getInt("highestCombinedLevel", 0);
+            if (player.damageLevel+player.healerLevel+player.tankLevel > highestCombined){
+                editor.putInt("highestCombinedLevel", player.damageLevel+player.healerLevel+player.tankLevel);
+            }
+            editor.apply();
         }
-        if (isPaused) {
+        if (isPausedButton) {
             if (paused.quitButtonClicked(touchX, touchY)){
                 Handler mainHandler = new Handler(getContext().getMainLooper());
 

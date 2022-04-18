@@ -263,4 +263,8 @@ public class GameActivity extends Activity {
             startActivity(new Intent(GameActivity.this, ReadyActivity.class));
         }
     }
+
+    public void returnToSelectionScreen(){
+        startActivity(new Intent(GameActivity.this, ReadyActivity.class));
+    }
 }

@@ -54,12 +54,10 @@ public class GameOver {
         scale = ((float)(screenHeight/15.54)/height);
 
         Matrix matrix = new Matrix();
-        matrix.postScale(scaleW, scale);
+        matrix.postScale(scale, scale);
 
         returnHomeButton = Bitmap.createBitmap(initialReturnHomeButton, 0, 0, width, height, matrix, false);
         returnHomeButton1 = Bitmap.createBitmap(initialReturnHomeButton1, 0, 0, width, height, matrix, false);
-        initialReturnHomeButton.recycle();
-        initialReturnHomeButton1.recycle();
     }
 
     public void draw(Canvas canvas) {
@@ -105,6 +103,6 @@ public class GameOver {
     }
 
     public boolean noThanksButtonClicked(int touchPositionX, int touchPositionY){
-        return (touchPositionX >= returnHomeButtonX && touchPositionX <= returnHomeButtonX+returnHomeButton.getWidth() && touchPositionY >= returnHomeButtonY+returnHomeButton.getHeight()+scale*80 && touchPositionY <= returnHomeButtonY+returnHomeButton.getHeight()+scale*150);
+        return (touchPositionX >= returnHomeButtonX && touchPositionX <= returnHomeButtonX+returnHomeButton.getWidth() && touchPositionY >= returnHomeButtonY+returnHomeButton.getHeight()+scale*10 && touchPositionY <= returnHomeButtonY+returnHomeButton.getHeight()+scale*80);
     }
 }

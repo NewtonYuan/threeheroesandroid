@@ -1,11 +1,14 @@
 package com.prestige.prestigegame;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -27,7 +30,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ReadyActivity extends AppCompatActivity implements View.OnDragListener, View.OnTouchListener{
+public class ReadyActivity extends AppCompatActivity implements View.OnTouchListener{
     private boolean toPauseMusic = true;
     String msg;
     private android.widget.RelativeLayout.LayoutParams layoutParams;
@@ -43,120 +46,51 @@ public class ReadyActivity extends AppCompatActivity implements View.OnDragListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ready);
 
+        ImageView background = (ImageView) findViewById(R.id.background);
+        background.setColorFilter(ContextCompat.getColor(this, R.color.blackTint), PorterDuff.Mode.SRC_OVER);
+
         ImageView dpsChar = findViewById(R.id.dpsCharacter);
-        dpsChar.setTag(R.drawable.damageidle);
+        dpsChar.setTag(R.id.characterRole, 0);
+        dpsChar.setTag(R.id.characterImage, R.drawable.damageidle);
         dpsChar.setOnTouchListener(this);
+
         ImageView healerChar = findViewById(R.id.healerCharacter);
-        healerChar.setTag(R.drawable.healeridle);
+        healerChar.setTag(R.id.characterRole, 1);
+        healerChar.setTag(R.id.characterImage, R.drawable.healer);
         healerChar.setOnTouchListener(this);
+
         ImageView tankChar = findViewById(R.id.tankCharacter);
-        tankChar.setTag(R.drawable.tankidle);
+        tankChar.setTag(R.id.characterRole, 2);
+        tankChar.setTag(R.id.characterImage, R.drawable.tank);
         tankChar.setOnTouchListener(this);
-        //Set Drag Event Listeners for defined layouts
-        findViewById(R.id.dpsFrame).setOnDragListener(this);
-        findViewById(R.id.healerFrame).setOnDragListener(this);
-        findViewById(R.id.tankFrame).setOnDragListener(this);
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent motionEvent) {
-       if(((Long) System.currentTimeMillis() - then) > 500){
-           // Create a new ClipData.Item from the ImageView object's tag
-           ClipData.Item item = new ClipData.Item(String.valueOf(v.getTag()));
-           // Create a new ClipData using the tag as a label, the plain text MIME type, and
-           // the already-created item. This will create a new ClipDescription object within the
-           // ClipData, and set its MIME type entry to "text/plain"
-           String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-           ClipData data = new ClipData(v.getTag().toString(), mimeTypes, item);
-           // Instantiates the drag shadow builder.
-           View.DragShadowBuilder dragshadow = new View.DragShadowBuilder(v);
-           // Starts the drag
-           v.startDrag(data        // data to be dragged
-                   , dragshadow   // drag shadow builder
-                   , v           // local data about the drag and drop operation
-                   , 0          // flags (not currently used, set to 0)
-           );
-           return true;
-       }
-       return false;
-    }
-
-    public boolean onLongClick(View v) {
-        // Create a new ClipData.Item from the ImageView object's tag
-        ClipData.Item item = new ClipData.Item(String.valueOf(v.getTag()));
-        // Create a new ClipData using the tag as a label, the plain text MIME type, and
-        // the already-created item. This will create a new ClipDescription object within the
-        // ClipData, and set its MIME type entry to "text/plain"
-        String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-        ClipData data = new ClipData(v.getTag().toString(), mimeTypes, item);
-        // Instantiates the drag shadow builder.
-        View.DragShadowBuilder dragshadow = new View.DragShadowBuilder(v);
-        // Starts the drag
-        v.startDrag(data        // data to be dragged
-                , dragshadow   // drag shadow builder
-                , v           // local data about the drag and drop operation
-                , 0          // flags (not currently used, set to 0)
-        );
-        return true;
-    }
-    // This is the method that the system calls when it dispatches a drag event to the listener.
-    @Override
-    public boolean onDrag(View v, DragEvent event) {
-        this.v = v;
-        // Defines a variable to store the action type for the incoming event
-        int action = event.getAction();
-        // Handles each of the expected events
-        switch (action) {
-
-            case DragEvent.ACTION_DRAG_STARTED:
-                return event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN);
-
-            case DragEvent.ACTION_DRAG_ENTERED:
-                // Applies a GRAY or any color tint to the View. Return true; the return value is ignored.
-                v.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
-                // Invalidate the view to force a redraw in the new tint
-                v.invalidate();
-                return true;
-
-            case DragEvent.ACTION_DRAG_LOCATION:
-                // Ignore the event
-                return true;
-
-            case DragEvent.ACTION_DRAG_EXITED:
-
-            case DragEvent.ACTION_DRAG_ENDED:
-                // Turns off any color tinting
-                // Re-sets the color tint to blue. Returns true; the return value is ignored.
-                // view.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
-                //It will clear a color filter .
-                v.getBackground().clearColorFilter();
-                // Invalidate the view to force a redraw in the new tint
-                v.invalidate();
-                return true;
-
-            case DragEvent.ACTION_DROP:
-                // Gets the item containing the dragged data
-                ClipData.Item item = event.getClipData().getItemAt(0);
-                // Gets the text data from the item.
-                String dragData = item.getText().toString();
-                // Turns off any color tints
-                v.getBackground().clearColorFilter();
-                // Invalidates the view to force a redraw
-                v.invalidate();
-
-                View vw = (View) event.getLocalState();
-                ViewGroup owner = (ViewGroup) vw.getParent();
-                owner.removeView(vw); //remove the dragged view
-                //caste the view into LinearLayout as our drag acceptable layout is LinearLayout
-                ImageView container = (ImageView) v;
-                container.setBackgroundResource(Integer.valueOf(dragData));//Add the dragged view
-                charactersSelected++;
-                vw.setVisibility(View.VISIBLE);//finally set Visibility to VISIBLE
-                // Returns true. DragEvent.getResult() will return true.
-                return true;
-
-            default:
-                break;
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                return false;
+            case MotionEvent.ACTION_UP:
+                int newImage = Integer.parseInt(String.valueOf(v.getTag(R.id.characterImage)));
+                int chosenRole = Integer.parseInt(String.valueOf(v.getTag(R.id.characterRole)));
+                if (chosenRole == 0){
+                    charactersSelected++;
+                    ImageView frame = (ImageView) findViewById(R.id.dpsFrame);
+                    frame.setBackgroundResource(newImage);
+                    return true;
+                }
+                if (chosenRole == 1){
+                    charactersSelected++;
+                    ImageView frame = (ImageView) findViewById(R.id.healerFrame);
+                    frame.setBackgroundResource(newImage);
+                    return true;
+                }
+                if (chosenRole == 2){
+                    charactersSelected++;
+                    ImageView frame = (ImageView) findViewById(R.id.tankFrame);
+                    frame.setBackgroundResource(newImage);
+                    return true;
+                }
         }
         return false;
     }
@@ -177,8 +111,11 @@ public class ReadyActivity extends AppCompatActivity implements View.OnDragListe
         toPauseMusic = true;
     }
 
+    public void heroSelect(View view){
+    }
+
     public void startButtonClick(View view){
-        if (charactersSelected != 3){
+        if (charactersSelected < 3){
             Toast.makeText(this, "Please select ALL 3 heroes!", Toast.LENGTH_SHORT).show();
         } else {
             startActivity(new Intent(ReadyActivity.this, GameActivity.class));

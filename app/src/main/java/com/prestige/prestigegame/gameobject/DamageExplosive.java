@@ -50,8 +50,8 @@ public class DamageExplosive extends Circle {
                 context,
                 ContextCompat.getColor(context, R.color.spell),
                 player.getPositionX(),
-                player.getPositionY()-75,
-                20
+                player.getPositionY()-50,
+                15
         );
         this.player = player;
 
@@ -111,7 +111,7 @@ public class DamageExplosive extends Circle {
             if(entry.getValue() == closest){
                 closestEnemy = entry.getKey();
                 distanceToEnemyX = closestEnemy.getPositionX() - player.getPositionX();
-                distanceToEnemyY = closestEnemy.getPositionY() - player.getPositionY()+100;
+                distanceToEnemyY = closestEnemy.getPositionY() - player.getPositionY()+60;
                 foundEnemy = true;
             }
         }

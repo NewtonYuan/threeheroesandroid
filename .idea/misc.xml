@@ -4,9 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/AndroidStudioProjects/PrestigeGame/app/src/main/res/layout/activity_game.xml" value="0.18802083333333333" />
-        <entry key="..\:/AndroidStudioProjects/PrestigeGame/app/src/main/res/layout/activity_heroes.xml" value="0.4010416666666667" />
-        <entry key="..\:/AndroidStudioProjects/PrestigeGame/app/src/main/res/layout/activity_main.xml" value="0.67" />
-        <entry key="..\:/AndroidStudioProjects/PrestigeGame/app/src/main/res/layout/activity_ready.xml" value="0.29937791601866254" />
+        <entry key="..\:/AndroidStudioProjects/PrestigeGame/app/src/main/res/layout/activity_heroes.xml" value="0.29330254041570436" />
+        <entry key="..\:/AndroidStudioProjects/PrestigeGame/app/src/main/res/layout/activity_leader_board.xml" value="0.19583333333333333" />
+        <entry key="..\:/AndroidStudioProjects/PrestigeGame/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/AndroidStudioProjects/PrestigeGame/app/src/main/res/layout/activity_ready.xml" value="0.2326388888888889" />
+        <entry key="..\:/AndroidStudioProjects/PrestigeGame/app/src/main/res/layout/activity_records.xml" value="0.3925549915397631" />
         <entry key="..\:/AndroidStudioProjects/PrestigeGame/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.208" />
         <entry key="..\:/AndroidStudioProjects/PrestigeGame/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2345" />
       </map>

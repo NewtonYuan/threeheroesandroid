@@ -3,19 +3,32 @@
     package="com.prestige.prestigegame">
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".LeaderBoardActivity"
+            android:exported="false" />
+
         <meta-data
-        android:name="com.google.android.gms.ads.APPLICATION_ID"
-        android:value="ca-app-pub-7351857308954450~5511703597"/>
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7351857308954450~5511703597" />
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/game_services_project_id" />
+
+        <activity
+            android:name=".RecordsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ReadyActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".HeroesActivity"
             android:exported="false"

@@ -58,10 +58,10 @@ public class EnemyAnimator {
 
     public void draw(Canvas canvas, float positionX, float positionY, Paint paint, Enemy enemy) {
         if (enemy.enemyVelocityX < 0){
-            canvas.drawBitmap(enemyFlippedAnimation[movingFrame], positionX-50, positionY-50, paint);
+            canvas.drawBitmap(enemyFlippedAnimation[movingFrame], positionX-30, positionY-30, paint);
             flipped = true;
         } else {
-            canvas.drawBitmap(enemyAnimation[movingFrame], positionX-50, positionY-50, paint);
+            canvas.drawBitmap(enemyAnimation[movingFrame], positionX-30, positionY-30, paint);
             flipped = false;
         }
         toggleIdxMovingFrame();
