@@ -2,7 +2,9 @@ package com.prestige.prestigegame;
 
 import android.animation.Animator;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -36,8 +38,10 @@ import com.prestige.prestigegame.gameobject.Player;
  * MainActivity is the entry point to our application.
  */
 public class GameActivity extends Activity {
-    private static final String AD_UNIT_ID = "ca-app-pub-7351857308954450/6944150865";
-    private static final String FORCED_AD_UNIT_ID = "ca-app-pub-7351857308954450/6217478272";
+    //ca-app-pub-7678041850506894/1608847520
+    //ca-app-pub-7678041850506894/5356520848
+    private static final String AD_UNIT_ID = "ca-app-pub-7678041850506894/1608847520";
+    private static final String FORCED_AD_UNIT_ID = "ca-app-pub-7678041850506894/5356520848";
     private static final long COUNTER_TIME = 10;
     private static final int GAME_OVER_REWARD = 1;
     private static final String TAG = "Game";
@@ -53,6 +57,15 @@ public class GameActivity extends Activity {
     private com.prestige.prestigegame.Game game;
     private Player player;
 
+    //Selections
+    public boolean damageHeroSelected;
+    public boolean healerHeroSelected;
+    public boolean tankHeroSelected;
+    public boolean perlaHeroSelected;
+    public boolean alfredHeroSelected;
+    public boolean erinaHeroSelected;
+    public boolean musicMuted = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -67,6 +80,13 @@ public class GameActivity extends Activity {
         loadRewardedAd();
         loadInterstitialAd();
 
+        damageHeroSelected = ReadyActivity.damageHeroSelected;
+        healerHeroSelected = ReadyActivity.healerHeroSelected;
+        tankHeroSelected = ReadyActivity.tankHeroSelected;
+        perlaHeroSelected = ReadyActivity.perlaHeroSelected;
+        alfredHeroSelected = ReadyActivity.alfredHeroSelected;
+        erinaHeroSelected = ReadyActivity.erinaHeroSelected;
+
         // Set content view to game, so that objects in the Game class can be rendered to the screen
         game = new Game(this, GameActivity.this);
         setContentView(game);
@@ -74,6 +94,12 @@ public class GameActivity extends Activity {
         gameMusicPlayer = MediaPlayer.create(GameActivity.this, R.raw.bgm);
         gameMusicPlayer.setLooping(true);
         gameMusicPlayer.setVolume(0.2f, 0.2f);
+
+        SharedPreferences settings = this.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        musicMuted = settings.getBoolean("musicMuted", false);
+        if (musicMuted){
+            gameMusicPlayer.setVolume(0, 0);
+        }
     }
 
     @Override
@@ -113,6 +139,16 @@ public class GameActivity extends Activity {
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
+    }
+
+    public void muteMusic(){
+        if (!musicMuted){
+            musicMuted = true;
+            gameMusicPlayer.setVolume(0, 0);
+        } else {
+            musicMuted = false;
+            gameMusicPlayer.setVolume(0.2f, 0.2f);
+        }
     }
 
     public void loadRewardedAd() {

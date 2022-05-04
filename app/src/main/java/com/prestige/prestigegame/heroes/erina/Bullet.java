@@ -1,4 +1,4 @@
-package com.prestige.prestigegame.gameobject;
+package com.prestige.prestigegame.heroes.erina;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,7 +12,10 @@ import androidx.core.content.ContextCompat;
 import com.prestige.prestigegame.GameDisplay;
 import com.prestige.prestigegame.GameLoop;
 import com.prestige.prestigegame.R;
+import com.prestige.prestigegame.gameobject.Circle;
 import com.prestige.prestigegame.gameobject.Enemy;
+import com.prestige.prestigegame.gameobject.GameObject;
+import com.prestige.prestigegame.gameobject.Player;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,8 +24,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Collections;
 
-public class DamageExplosive extends Circle {
-    public static final double SPEED_PIXELS_PER_SECOND = 30.0;
+public class Bullet extends Circle {
+    public static final double SPEED_PIXELS_PER_SECOND = 35.0;
     private static final double MAX_SPEED = SPEED_PIXELS_PER_SECOND;
     private double enemyValue;
     private Player player;
@@ -32,33 +35,34 @@ public class DamageExplosive extends Circle {
     private double distanceToEnemy;
     private double distanceToEnemyX;
     private double distanceToEnemyY;
-    private Bitmap arrowBmp;
-    private Bitmap rotatedArrowBmp;
+    private Bitmap bulletBmp;
+    private Bitmap rotatedBulletBmp;
     private Enemy closestEnemy;
     public boolean foundEnemy = false;
-    public double arrowAngle;
+    public double bulletAngle;
     private boolean firstAbilityUse = true;
     private int multiShotCounter = 0;
     private final double UPS = GameLoop.MAX_UPS;
-    private final double initialDelay = UPS*15  ;
+    private final double initialDelay = UPS*15;
     public boolean activated = false;
+    public boolean leftBullet;
 
     HashMap<Enemy, Double> enemyMap = new HashMap<>();
 
-    public DamageExplosive(Context context, Player player) {
+    public Bullet(Context context, Player player, boolean leftBullet) {
         super(
                 context,
                 ContextCompat.getColor(context, R.color.spell),
                 player.getPositionX(),
                 player.getPositionY()-50,
-                15
+                10
         );
+        this.leftBullet = leftBullet;
         this.player = player;
 
         BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
         bitmapOptions.inScaled = false;
-        arrowBmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.explosivearrow, bitmapOptions);
-
+        bulletBmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet, bitmapOptions);
         velocityX = player.getDirectionX()*MAX_SPEED;
         velocityY = player.getDirectionY()*MAX_SPEED;
 
@@ -66,14 +70,21 @@ public class DamageExplosive extends Circle {
         screenHeight = context.getResources().getDisplayMetrics().heightPixels;
     }
 
-    public void drawArrow(Canvas canvas, GameDisplay gameDisplay){
+    public void drawBullet(Canvas canvas, GameDisplay gameDisplay){
         Matrix matrix = new Matrix();
-        matrix.postRotate((float)arrowAngle);
-        rotatedArrowBmp = Bitmap.createBitmap(arrowBmp, 0, 0, arrowBmp.getWidth(), arrowBmp.getHeight(), matrix, true);
-        canvas.drawBitmap(rotatedArrowBmp,
-                (float) gameDisplay.gameToDisplayCoordinatesX(positionX),
-                (float) gameDisplay.gameToDisplayCoordinatesY(positionY),
-                null);
+        matrix.postRotate((float)bulletAngle);
+        rotatedBulletBmp = Bitmap.createBitmap(bulletBmp, 0, 0, bulletBmp.getWidth(), bulletBmp.getHeight(), matrix, true);
+        if (leftBullet){
+            canvas.drawBitmap(rotatedBulletBmp,
+                    (float) gameDisplay.gameToDisplayCoordinatesX(positionX)-30,
+                    (float) gameDisplay.gameToDisplayCoordinatesY(positionY)-30,
+                    null);
+        } else {
+            canvas.drawBitmap(rotatedBulletBmp,
+                    (float) gameDisplay.gameToDisplayCoordinatesX(positionX)+30,
+                    (float) gameDisplay.gameToDisplayCoordinatesY(positionY)-30,
+                    null);
+        }
     }
 
     @Override
@@ -86,9 +97,9 @@ public class DamageExplosive extends Circle {
             velocityX = directionX*MAX_SPEED;
             velocityY = directionY*MAX_SPEED;
             if (directionX < 0){
-                arrowAngle = Math.toDegrees(Math.atan(distanceToEnemyY/distanceToEnemyX))-90;
+                bulletAngle = Math.toDegrees(Math.atan(distanceToEnemyY/distanceToEnemyX))-90;
             } else {
-                arrowAngle = Math.toDegrees(Math.atan(distanceToEnemyY/distanceToEnemyX))+90;
+                bulletAngle = Math.toDegrees(Math.atan(distanceToEnemyY/distanceToEnemyX))+90;
             }
         } else {
             velocityX = 0;
@@ -111,13 +122,13 @@ public class DamageExplosive extends Circle {
             if(entry.getValue() == closest){
                 closestEnemy = entry.getKey();
                 distanceToEnemyX = closestEnemy.getPositionX() - player.getPositionX();
-                distanceToEnemyY = closestEnemy.getPositionY() - player.getPositionY()+60;
+                distanceToEnemyY = closestEnemy.getPositionY() - player.getPositionY()+80;
                 foundEnemy = true;
             }
         }
     }
 
-    public float getArrowAngle(){
-        return (float) arrowAngle;
+    public float getBulletAngle(){
+        return (float) bulletAngle;
     }
 }

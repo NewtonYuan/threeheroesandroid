@@ -1,4 +1,4 @@
-package com.prestige.prestigegame.gameobject;
+package com.prestige.prestigegame.heroes.damage;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,6 +15,8 @@ import com.prestige.prestigegame.GameDisplay;
 import com.prestige.prestigegame.GameLoop;
 import com.prestige.prestigegame.R;
 import com.prestige.prestigegame.Utils;
+import com.prestige.prestigegame.gameobject.Circle;
+import com.prestige.prestigegame.gameobject.Player;
 import com.prestige.prestigegame.graphics.CharacterList;
 
 import java.util.Timer;
@@ -24,7 +26,7 @@ import java.util.TimerTask;
  * Enemy is a character which always moves in the direction of the player.
  * The Enemy class is an extension of a Circle, which is an extension of a GameObject
  */
-public class DamageExplosion extends Circle {
+public class Explosion extends Circle {
 
     private Player player;
     private int screenWidth;
@@ -43,7 +45,7 @@ public class DamageExplosion extends Circle {
     private final double initialDelay = UPS*15;
     public boolean improvedKnockBack = false;
 
-    public DamageExplosion(Context context, Player player, double positionX, double positionY, double radius) {
+    public Explosion(Context context, Player player, double positionX, double positionY, double radius) {
         super(context, ContextCompat.getColor(context, R.color.coin), positionX, positionY, radius);
         this.player = player;
 

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Collections;
 
-public class Spell extends Circle {
+public class ExplosiveArrow extends Circle {
     public static final double SPEED_PIXELS_PER_SECOND = 30.0;
     private static final double MAX_SPEED = SPEED_PIXELS_PER_SECOND;
     private double enemyValue;
@@ -45,19 +45,20 @@ public class Spell extends Circle {
 
     HashMap<Enemy, Double> enemyMap = new HashMap<>();
 
-    public Spell(Context context, Player player) {
+    public ExplosiveArrow(Context context, Player player) {
         super(
-            context,
-            ContextCompat.getColor(context, R.color.spell),
-            player.getPositionX(),
-            player.getPositionY()-50,
-      15
+                context,
+                ContextCompat.getColor(context, R.color.spell),
+                player.getPositionX(),
+                player.getPositionY()-50,
+                15
         );
         this.player = player;
 
         BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
         bitmapOptions.inScaled = false;
-        arrowBmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.arrow, bitmapOptions);
+        arrowBmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.explosivearrow, bitmapOptions);
+
         velocityX = player.getDirectionX()*MAX_SPEED;
         velocityY = player.getDirectionY()*MAX_SPEED;
 

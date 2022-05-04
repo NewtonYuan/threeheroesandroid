@@ -8,15 +8,12 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.prestige.prestigegame.R;
 import com.prestige.prestigegame.gameobject.Player;
-import com.prestige.prestigegame.graphics.DamageAnimator;
-import com.prestige.prestigegame.graphics.HealerAnimator;
 import com.prestige.prestigegame.graphics.TankAnimator;
 
 
@@ -36,16 +33,10 @@ public class LevelUp {
     private float option3Y;
     private float scaleWidth;
     private float scaleHeight;
-    private TankAnimator tankAnimator;
-    private DamageAnimator damageAnimator;
-    private HealerAnimator healerAnimator;
     private Player player;
 
-    public LevelUp(Context context, TankAnimator tankAnimator, DamageAnimator damageAnimator, HealerAnimator healerAnimator, Player player) {
+    public LevelUp(Context context, Player player) {
         this.context = context;
-        this.tankAnimator = tankAnimator;
-        this.damageAnimator = damageAnimator;
-        this.healerAnimator = healerAnimator;
         this.player = player;
         screenWidth = context.getResources().getDisplayMetrics().widthPixels;
         screenHeight = context.getResources().getDisplayMetrics().heightPixels;
@@ -71,16 +62,10 @@ public class LevelUp {
         initialOptionsBmp.recycle();
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, String dpsText, String healerText, String tankText) {
         final Typeface font = ResourcesCompat.getFont(context, R.font.customfont);
 
         String gameOverText = "Choose One";
-        tankAnimator.getLevelUpText(player.tankLevel);
-        damageAnimator.getLevelUpText(player.damageLevel);
-        healerAnimator.getLevelUpText(player.healerLevel);
-        String tankText = tankAnimator.levelUpMsg;
-        String dpsText = damageAnimator.levelUpMsg;
-        String healerText = healerAnimator.levelUpMsg;
         String damageHeading = "+DPS";
         String tankHeading = "+Tank";
         String healerHeading = "+Healer";

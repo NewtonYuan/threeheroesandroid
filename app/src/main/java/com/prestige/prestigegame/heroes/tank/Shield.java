@@ -1,4 +1,4 @@
-package com.prestige.prestigegame.gameobject;
+package com.prestige.prestigegame.heroes.tank;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,20 +11,19 @@ import android.media.MediaPlayer;
 
 import androidx.core.content.ContextCompat;
 
+import com.prestige.prestigegame.Game;
 import com.prestige.prestigegame.GameDisplay;
 import com.prestige.prestigegame.GameLoop;
 import com.prestige.prestigegame.R;
 import com.prestige.prestigegame.Utils;
+import com.prestige.prestigegame.gameobject.Circle;
+import com.prestige.prestigegame.gameobject.Player;
 import com.prestige.prestigegame.graphics.CharacterList;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * Enemy is a character which always moves in the direction of the player.
- * The Enemy class is an extension of a Circle, which is an extension of a GameObject
- */
-public class TankShield extends Circle {
+public class Shield extends Circle {
     MediaPlayer shieldSoundPlayer;
     private static final double SPAWNS_PER_MINUTE = 120;
     private static final double SPAWNS_PER_SECOND = SPAWNS_PER_MINUTE/80.0;
@@ -48,10 +47,12 @@ public class TankShield extends Circle {
     public boolean fourthPhase = false;
     private boolean timerSet = false;
     private boolean firstShield = true;
+    private Game game;
 
-    public TankShield(Context context, Player player, double positionX, double positionY, double radius) {
+    public Shield(Context context, Player player, double positionX, double positionY, double radius, Game game) {
         super(context, ContextCompat.getColor(context, R.color.coin), positionX, positionY, radius);
         this.player = player;
+        this.game = game;
 
         shieldSoundPlayer = MediaPlayer.create(context, R.raw.shieldup);
 
@@ -123,7 +124,7 @@ public class TankShield extends Circle {
         shieldTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                shieldSoundPlayer.start();
+                if (!game.sfxMuted) { shieldSoundPlayer.start(); }
                 if (player.tankLevel >= 9){
                     if (secondPhase){
                         secondPhase = false;

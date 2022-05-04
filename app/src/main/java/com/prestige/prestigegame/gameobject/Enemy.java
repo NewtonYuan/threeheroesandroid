@@ -99,8 +99,8 @@ import java.util.List;
  * The Enemy class is an extension of a Circle, which is an extension of a GameObject
  */
 public class Enemy extends Circle {
-    private double SPEED_PIXELS_PER_SECOND = Player.SPEED_PIXELS_PER_SECOND*0.7;
-    private double MAX_SPEED = SPEED_PIXELS_PER_SECOND / GameLoop.MAX_UPS;
+    public double ORIGINAL_SPEED = Player.SPEED_PIXELS_PER_SECOND*0.7 / GameLoop.MAX_UPS;
+    public double MAX_SPEED = Player.SPEED_PIXELS_PER_SECOND*0.7 / GameLoop.MAX_UPS;
     private static final double SPAWNS_PER_MINUTE = 180;
     private static final double SPAWNS_PER_SECOND = SPAWNS_PER_MINUTE/80.0;
     private static final double UPDATES_PER_SPAWN = GameLoop.MAX_UPS/SPAWNS_PER_SECOND;
@@ -144,10 +144,10 @@ public class Enemy extends Circle {
             this.damage = enemyLevel*2 + 5;
         }
         if(this.enemyLevel > 5 && this.enemyLevel <= 10){
-            this.SPEED_PIXELS_PER_SECOND = Player.SPEED_PIXELS_PER_SECOND * 0.725;
+            this.MAX_SPEED = Player.SPEED_PIXELS_PER_SECOND * 0.725 / GameLoop.MAX_UPS;
         }
         if(this.enemyLevel > 10){
-            this.SPEED_PIXELS_PER_SECOND = Player.SPEED_PIXELS_PER_SECOND * 0.75;
+            this.MAX_SPEED = Player.SPEED_PIXELS_PER_SECOND * 0.75 / GameLoop.MAX_UPS;
             this.hitPoints = enemyLevel*2;
             this.damage = enemyLevel*3;
         }

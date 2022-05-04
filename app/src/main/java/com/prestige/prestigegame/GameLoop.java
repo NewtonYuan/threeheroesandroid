@@ -1,8 +1,13 @@
 package com.prestige.prestigegame;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.SurfaceHolder;
+
+import com.prestige.prestigegame.gamepanel.Paused;
 
 public class GameLoop extends Thread{
     public static final double MAX_UPS = 120.0;
@@ -13,7 +18,10 @@ public class GameLoop extends Thread{
 
     private boolean isRunning = false;
     public boolean isPaused = false;
-    public boolean firstPause = false;
+    public boolean pausedDrawRequest = false;
+    public boolean firstPause = true;
+    private Canvas canvas = null;
+    private Bitmap background;
 
     public GameLoop(Game game, SurfaceHolder surfaceHolder) {
         this.game = game;
@@ -42,7 +50,6 @@ public class GameLoop extends Thread{
         long sleepTime;
 
         // Game loop
-        Canvas canvas = null;
         startTime = System.currentTimeMillis();
         while(isRunning) {
             if (!isPaused) {
@@ -97,6 +104,13 @@ public class GameLoop extends Thread{
                 }
             } if (isPaused) {
                 game.checkResume();
+                if (pausedDrawRequest){
+                    canvas = surfaceHolder.lockCanvas();
+                    game.draw(canvas);
+                    game.paused.draw(canvas);
+                    surfaceHolder.unlockCanvasAndPost(canvas);
+                    pausedDrawRequest = false;
+                }
             }
         }
     }
@@ -117,6 +131,7 @@ public class GameLoop extends Thread{
 
     public void resumeLoop(){
         isPaused = false;
+        firstPause = true;
     }
 
     public void restartLoop(){

@@ -9,6 +9,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -93,14 +94,14 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/healerText"
+                android:id="@+id/supportText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="114dp"
                 android:layout_marginTop="208dp"
                 android:layout_marginEnd="40dp"
                 android:fontFamily="@font/customfont"
-                android:text="HEALER"
+                android:text="SUPPORT"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="30dp"
@@ -121,7 +122,7 @@
                 android:textColor="@color/white"
                 android:textSize="30dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/healerText"
+                app:layout_constraintStart_toEndOf="@+id/supportText"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
@@ -147,7 +148,7 @@
                 android:background="#4Fd3d3d3"
                 app:layout_constraintEnd_toStartOf="@+id/tankFrame"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/healerText">
+                app:layout_constraintTop_toBottomOf="@+id/supportText">
 
             </ImageView>
 
@@ -179,86 +180,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/dpsCharacter"
-                android:layout_width="78dp"
-                android:layout_height="79dp"
-                android:background="@drawable/damageidle"
-                android:clickable="true"
-                android:focusable="true"
-                android:longClickable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:onClick="heroSelect"
-                app:layout_constraintBottom_toBottomOf="@+id/characterFrame1"
-                app:layout_constraintEnd_toEndOf="@+id/characterFrame1"
-                app:layout_constraintStart_toStartOf="@+id/characterFrame1"
-                app:layout_constraintTop_toTopOf="@+id/characterFrame1" />
-
-            <ImageView
-                android:id="@+id/characterFrame2"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginTop="390dp"
-                android:background="#4Fd3d3d3"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:onClick="heroSelect"
-                app:layout_constraintEnd_toStartOf="@+id/characterFrame3"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/characterFrame1"
-                app:layout_constraintTop_toTopOf="parent">
-
-            </ImageView>
-
-            <ImageView
-                android:id="@+id/healerCharacter"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:src="@drawable/healer"
-                android:clickable="true"
-                android:focusable="true"
-                android:longClickable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:onClick="heroSelect"
-                app:layout_constraintBottom_toBottomOf="@+id/characterFrame2"
-                app:layout_constraintEnd_toEndOf="@+id/characterFrame2"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="@+id/characterFrame2"
-                app:layout_constraintTop_toTopOf="@+id/characterFrame2">
-
-            </ImageView>
-
-            <ImageView
-                android:id="@+id/characterFrame3"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="390dp"
-                android:layout_marginEnd="70dp"
-                android:src="#4Fd3d3d3"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:onClick="heroSelect"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/characterFrame2"
-                app:layout_constraintTop_toTopOf="parent">
-
-            </ImageView>
-
-            <ImageView
-                android:id="@+id/tankCharacter"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:src="@drawable/tank"
-                android:clickable="true"
-                android:focusable="true"
-                android:longClickable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:onClick="heroSelect"
-                app:layout_constraintBottom_toBottomOf="@+id/characterFrame3"
-                app:layout_constraintEnd_toEndOf="@+id/characterFrame3"
-                app:layout_constraintStart_toStartOf="@+id/characterFrame3"
-                app:layout_constraintTop_toTopOf="@+id/characterFrame3">
-
-            </ImageView>
 
             <ImageView
                 android:id="@+id/characterFrame4"
@@ -288,6 +209,118 @@
             </ImageView>
 
             <ImageView
+                android:id="@+id/perlaCharacter"
+                android:layout_width="78dp"
+                android:layout_height="79dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:longClickable="true"
+                android:onClick="heroSelect"
+                android:src="@drawable/perla"
+                app:layout_constraintBottom_toBottomOf="@+id/characterFrame5"
+                app:layout_constraintEnd_toEndOf="@+id/characterFrame5"
+                app:layout_constraintStart_toStartOf="@+id/characterFrame5"
+                app:layout_constraintTop_toTopOf="@+id/characterFrame5" />
+
+            <ImageView
+                android:id="@+id/dpsCharacter"
+                android:layout_width="78dp"
+                android:layout_height="79dp"
+                android:background="@drawable/damageidle"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:longClickable="true"
+                android:onClick="heroSelect"
+                app:layout_constraintBottom_toBottomOf="@+id/characterFrame1"
+                app:layout_constraintEnd_toEndOf="@+id/characterFrame1"
+                app:layout_constraintStart_toStartOf="@+id/characterFrame1"
+                app:layout_constraintTop_toTopOf="@+id/characterFrame1" />
+
+            <ImageView
+                android:id="@+id/erinaCharacter"
+                android:layout_width="77dp"
+                android:layout_height="79dp"
+                android:layout_marginBottom="1dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:longClickable="true"
+                android:onClick="heroSelect"
+                android:src="@drawable/erina"
+                app:layout_constraintBottom_toBottomOf="@+id/characterFrame4"
+                app:layout_constraintEnd_toEndOf="@+id/characterFrame4"
+                app:layout_constraintStart_toStartOf="@+id/characterFrame4"
+                app:layout_constraintTop_toTopOf="@+id/characterFrame4" />
+
+            <ImageView
+                android:id="@+id/characterFrame2"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="390dp"
+                android:background="#4Fd3d3d3"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:onClick="heroSelect"
+                app:layout_constraintEnd_toStartOf="@+id/characterFrame3"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/characterFrame1"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/healerCharacter"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:longClickable="true"
+                android:onClick="heroSelect"
+                android:src="@drawable/healer"
+                app:layout_constraintBottom_toBottomOf="@+id/characterFrame2"
+                app:layout_constraintEnd_toEndOf="@+id/characterFrame2"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="@+id/characterFrame2"
+                app:layout_constraintTop_toTopOf="@+id/characterFrame2">
+
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/characterFrame3"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="390dp"
+                android:layout_marginEnd="70dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:onClick="heroSelect"
+                android:src="#4Fd3d3d3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/characterFrame2"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/tankCharacter"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:longClickable="true"
+                android:onClick="heroSelect"
+                android:src="@drawable/tank"
+                app:layout_constraintBottom_toBottomOf="@+id/characterFrame3"
+                app:layout_constraintEnd_toEndOf="@+id/characterFrame3"
+                app:layout_constraintStart_toStartOf="@+id/characterFrame3"
+                app:layout_constraintTop_toTopOf="@+id/characterFrame3">
+
+            </ImageView>
+
+            <ImageView
                 android:id="@+id/characterFrame6"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
@@ -298,6 +331,23 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/characterFrame5"
                 app:layout_constraintTop_toTopOf="parent">
+
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/alfredCharacter"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:longClickable="true"
+                android:onClick="heroSelect"
+                android:src="@drawable/alfred"
+                app:layout_constraintBottom_toBottomOf="@+id/characterFrame6"
+                app:layout_constraintEnd_toEndOf="@+id/characterFrame6"
+                app:layout_constraintStart_toStartOf="@+id/characterFrame6"
+                app:layout_constraintTop_toTopOf="@+id/characterFrame6">
 
             </ImageView>
 

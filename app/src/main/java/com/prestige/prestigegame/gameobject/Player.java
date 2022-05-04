@@ -1,7 +1,6 @@
 package com.prestige.prestigegame.gameobject;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -9,10 +8,6 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
-import android.util.Log;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -25,12 +20,7 @@ import com.prestige.prestigegame.gamepanel.HealthBar;
 import com.prestige.prestigegame.gamepanel.Joystick;
 import com.prestige.prestigegame.gamepanel.ProgressBar;
 import com.prestige.prestigegame.graphics.CharacterList;
-import com.prestige.prestigegame.graphics.DamageAnimator;
-import com.prestige.prestigegame.graphics.HealerAnimator;
 import com.prestige.prestigegame.graphics.TankAnimator;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Player is the main character of the game, which the user can control with a touch joystick.
@@ -39,13 +29,10 @@ import java.util.TimerTask;
 public class Player extends Circle {
     public static final double SPEED_PIXELS_PER_SECOND = 480.0;
     private static final double MAX_SPEED = SPEED_PIXELS_PER_SECOND / GameLoop.MAX_UPS;
-    public int MAX_HEALTH_POINTS = 50;
+    public float MAX_HEALTH_POINTS = 50;
     private Joystick joystick;
     public HealthBar healthBar;
-    private int healthPoints = MAX_HEALTH_POINTS;
-    private TankAnimator tankAnimator;
-    private DamageAnimator damageAnimator;
-    private HealerAnimator healerAnimator;
+    private float healthPoints = MAX_HEALTH_POINTS;
     private PlayerState playerState;
     private Paint playerPaint;
     private Paint shadow;
@@ -68,21 +55,14 @@ public class Player extends Circle {
     public double playerVelocityX = 0;
     private int invincibilityTimer = 0;
     private final double UPS = GameLoop.MAX_UPS;
-    Timer timer = new Timer();
-    Timer timer2 = new Timer();
 
-    public Player(Context context, Joystick joystick, double positionX, double positionY, double radius, TankAnimator tankAnimator, DamageAnimator damageAnimator, HealerAnimator healerAnimator, ProgressBar progressBar) {
+    public Player(Context context, Joystick joystick, double positionX, double positionY, double radius, ProgressBar progressBar) {
         super(context, ContextCompat.getColor(context, R.color.player), positionX, positionY, radius);
         this.joystick = joystick;
         this.healthBar = new HealthBar(context, this);
-        this.tankAnimator = tankAnimator;
-        this.damageAnimator = damageAnimator;
-        this.healerAnimator = healerAnimator;
         this.playerState = new PlayerState(this);
         this.context = context;
         this.progressBar = progressBar;
-
-        tankAnimator = new TankAnimator(context);
 
         playerPaint = new Paint();
         playerPaint.setColor(Color.RED);
@@ -150,44 +130,17 @@ public class Player extends Circle {
     }
 
     public void draw(Canvas canvas, GameDisplay gameDisplay) {
-        String tankLevel = String.valueOf(this.tankLevel);
-        String damageLevel = String.valueOf(this.damageLevel);
-        String healerLevel = String.valueOf(this.healerLevel);
-
-        Bitmap damageBmp = characterList.getDamageBmp();
-        Bitmap healerBmp = characterList.getHealerBmp();
-        Bitmap tankBmp = characterList.getTankBmp();
-
         //Shadows
         canvas.drawOval(screenWidth/2-25, screenHeight/2-10, screenWidth/2+25, screenHeight/2+10, shadow);
         canvas.drawOval(screenWidth/2-75, screenHeight/2+90, screenWidth/2-25, screenHeight/2+110, shadow);
         canvas.drawOval(screenWidth/2+25, screenHeight/2+90, screenWidth/2+75, screenHeight/2+110, shadow);
-
-        if (!invincibilityMode){
-            damageAnimator.draw(canvas, imgPositionX, imgPositionY-50, this, null);
-            healerAnimator.draw(canvas, imgPositionX-50, imgPositionY+50, this, null);
-            tankAnimator.draw(canvas, imgPositionX+50, imgPositionY+50, this, null);
-        } else {
-            damageAnimator.draw(canvas, imgPositionX, imgPositionY-50, this, invincibilityPaint);
-            healerAnimator.draw(canvas, imgPositionX-50, imgPositionY+50, this, invincibilityPaint);
-            tankAnimator.draw(canvas, imgPositionX+50, imgPositionY+50, this, invincibilityPaint);
-        }
-
-        canvas.drawText(damageLevel, imgPositionX+80, imgPositionY-20, strokePaint);
-        canvas.drawText(damageLevel, imgPositionX+80, imgPositionY-20, levelPaint);
-
-        canvas.drawText(healerLevel, imgPositionX+30, imgPositionY+80, strokePaint);
-        canvas.drawText(healerLevel, imgPositionX+30, imgPositionY+80, levelPaint);
-
-        canvas.drawText(tankLevel, imgPositionX+130, imgPositionY+80, strokePaint);
-        canvas.drawText(tankLevel, imgPositionX+130, imgPositionY+80, levelPaint);
     }
 
-    public int getHealthPoint() {
+    public float getHealthPoint() {
         return healthPoints;
     }
 
-    public void setHealthPoint(int healthPoints) {
+    public void setHealthPoint(float healthPoints) {
         // Only allow positive values
         if (healthPoints >= 0){
             this.healthPoints = healthPoints;

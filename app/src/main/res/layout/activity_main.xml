@@ -86,6 +86,20 @@
         app:layout_constraintStart_toEndOf="@+id/imageView11"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/musicSound"
+        android:layout_width="60dp"
+        android:layout_height="63dp"
+        android:layout_marginEnd="22dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:onClick="musicSoundClick"
+        android:background="@drawable/musicsound"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <!--<TextView
         android:id="@+id/tutorialText"
         android:layout_width="199dp"

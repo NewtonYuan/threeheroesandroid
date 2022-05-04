@@ -9,8 +9,8 @@ android {
         applicationId "com.prestige.prestigegame"
         minSdk 24
         targetSdk 32
-        versionCode 35
-        versionName "0.7.4"
+        versionCode 43
+        versionName "0.8.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

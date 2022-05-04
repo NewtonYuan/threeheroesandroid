@@ -1,52 +1,33 @@
 package com.prestige.prestigegame;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.gms.games.PlayGames;
 import com.prestige.prestigegame.gameobject.Circle;
 import com.prestige.prestigegame.gameobject.BronzeCoin;
-import com.prestige.prestigegame.gameobject.DamageExplosion;
-import com.prestige.prestigegame.gameobject.DamageExplosive;
-import com.prestige.prestigegame.gameobject.DamageGodArrow;
 import com.prestige.prestigegame.gameobject.Enemy;
 import com.prestige.prestigegame.gameobject.GoldCoin;
-import com.prestige.prestigegame.gameobject.HealerFreeze;
 import com.prestige.prestigegame.gameobject.Player;
 import com.prestige.prestigegame.gameobject.SilverCoin;
-import com.prestige.prestigegame.gameobject.Spell;
-import com.prestige.prestigegame.gameobject.TankKnockBack;
-import com.prestige.prestigegame.gameobject.TankShield;
+import com.prestige.prestigegame.gameobject.Spike;
 import com.prestige.prestigegame.gamepanel.GameOver;
 import com.prestige.prestigegame.gamepanel.Joystick;
 import com.prestige.prestigegame.gamepanel.LevelUp;
@@ -55,48 +36,70 @@ import com.prestige.prestigegame.gamepanel.Paused;
 import com.prestige.prestigegame.gamepanel.ProgressBar;
 import com.prestige.prestigegame.gamepanel.TimeAlive;
 import com.prestige.prestigegame.graphics.CharacterList;
-import com.prestige.prestigegame.graphics.DamageAnimator;
 import com.prestige.prestigegame.graphics.EnemyAnimator;
-import com.prestige.prestigegame.graphics.HealerAnimator;
 import com.prestige.prestigegame.graphics.SpriteSheet;
-import com.prestige.prestigegame.graphics.TankAnimator;
+import com.prestige.prestigegame.heroes.alfred.Alfred;
+import com.prestige.prestigegame.heroes.damage.Damage;
+import com.prestige.prestigegame.heroes.erina.Erina;
+import com.prestige.prestigegame.heroes.healer.Healer;
+import com.prestige.prestigegame.heroes.perla.Perla;
+import com.prestige.prestigegame.heroes.tank.Tank;
 import com.prestige.prestigegame.map.Map;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
 /**
  * Game manages all objects in the game and is responsible for updating all states and render all
  * objects to the screen
  */
-class Game extends SurfaceView implements SurfaceHolder.Callback {
+public class Game extends SurfaceView implements SurfaceHolder.Callback {
+    //Heroes
+    public Damage damageHero;
+    public Healer healerHero;
+    public Tank tankHero;
+    public Perla perlaHero;
+    public Alfred alfredHero;
+    public Erina erinaHero;
+
+    //Selections
+    public boolean damageHeroSelected;
+    public boolean healerHeroSelected;
+    public boolean tankHeroSelected;
+    public boolean perlaHeroSelected;
+    public boolean alfredHeroSelected;
+    public boolean erinaHeroSelected;
+
+    //Values
+    public double dpsDamage;
+    public double dpsReloadTime;
+
+    //Draw
+    private Paint selectedPaint = new Paint();
+    private Paint levelPaint = new Paint();
+    private Paint strokePaint = new Paint();
+    private Paint invincibilityPaint = new Paint();
+
+    //Hero Text
+    String dpsText;
+    String healerText;
+    String tankText;
+
     MediaPlayer bronzeCoinSoundPlayer = MediaPlayer.create(getContext(), R.raw.bronzecoin);
     MediaPlayer silverCoinSoundPlayer = MediaPlayer.create(getContext(), R.raw.silvercoin);
     MediaPlayer goldCoinSoundPlayer = MediaPlayer.create(getContext(), R.raw.goldcoin);
-    MediaPlayer arrowSoundPlayer = MediaPlayer.create(getContext(), R.raw.arrow);
-    MediaPlayer arrow2SoundPlayer = MediaPlayer.create(getContext(), R.raw.arrow2);
-    MediaPlayer arrow3SoundPlayer = MediaPlayer.create(getContext(), R.raw.arrow3);
-    MediaPlayer[] arrowSoundList = new MediaPlayer[]{arrowSoundPlayer, arrow2SoundPlayer, arrow3SoundPlayer};
-    MediaPlayer healSoundPlayer = MediaPlayer.create(getContext(), R.raw.heal);
-    MediaPlayer bigHealSoundPlayer = MediaPlayer.create(getContext(), R.raw.bigheal);
-    MediaPlayer explosionSoundPlayer = MediaPlayer.create(getContext(), R.raw.explosion);
     private int joystickPointerId = 0;
     private final Joystick joystick;
     private final Player player;
     private GameLoop gameLoop;
-    private List<Spell> spellList = new ArrayList<Spell>();
-    private List<DamageGodArrow> godArrowList = new ArrayList<DamageGodArrow>();
-    private List<DamageExplosive> explosiveList = new ArrayList<DamageExplosive>();
     private List<BronzeCoin> bronzeCoinList = new ArrayList<BronzeCoin>();
     private List<SilverCoin> silverCoinList = new ArrayList<SilverCoin>();
     private List<GoldCoin> goldCoinList = new ArrayList<GoldCoin>();
-    private int numberOfSpellsToCast = 0;
+    private List<Spike> spikeList = new ArrayList<Spike>();
     private GameOver gameOver;
-    private Paused paused;
+    public Paused paused;
     private LevelUp levelUp;
     private GameDisplay gameDisplay;
     private int JSX = 0;
@@ -109,29 +112,18 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     private BronzeCoin bronzeCoin;
     private SilverCoin silverCoin;
     private GoldCoin goldCoin;
+    private Spike spike;
     private Enemy enemy;
-    private TankShield tankShield;
-    private TankKnockBack tankKnockBack;
-    private HealerFreeze healerFreeze;
-    private int screenWidth;
-    private int screenHeight;
+    public   int screenWidth;
+    public int screenHeight;
     private final int initialEnemyDamage = 5;
     private int enemyDamage = initialEnemyDamage;
     public boolean isPaused = false;
     public boolean isPausedButton = false;
     private EnemyAnimator enemyAnimator;
-    private DamageAnimator damageAnimator;
-    private HealerAnimator healerAnimator;
-    private DamageExplosion damageExplosion;
     private int multiShotCount = 0;
     private int multiShotTimer = 0;
     private final double UPS = GameLoop.MAX_UPS;
-    private double damageDelay = UPS*1;
-    private int damageTimeCounter = 0;
-    private int godArrowTimeCounter = 0;
-    private int healTimeCounter = 0;
-    private int bigHealTimeCounter = 0;
-    private int explosiveTimeCounter = 0;
     private int enemyNumberTimeCounter = 0;
     private int enemyLevelUpCounter = 0;
     private int totalEnemiesDefeated = 0;
@@ -142,23 +134,19 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     private Activity gameActivity;
     public int playerHP;
     public boolean adShown = false;
-
-
-    public void checkResumeTimer(){
-        new java.util.Timer().schedule(
-                new java.util.TimerTask(){
-                    @Override
-                    public void run(){
-                        checkResume();
-                    }
-                },
-                100
-        );
-    }
+    private Canvas pausedCanvas;
+    public boolean sfxMuted = false;
+    public float reductionRatio = 1;
 
     public Game(Context context, Activity activity) {
         super(context);
         this.gameActivity = activity;
+
+        SharedPreferences settings = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        sfxMuted = settings.getBoolean("sfxMuted", false);
+
+        screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+        screenHeight = context.getResources().getDisplayMetrics().heightPixels;
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
 
@@ -166,41 +154,71 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         SurfaceHolder surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
 
+        paused = new Paused(context);
         gameLoop = new GameLoop(this, surfaceHolder);
 
         // Initialize game panels
         gameOver = new GameOver(context);
-        paused = new Paused(context);
-        joystick = new Joystick(JSX, JSY, 200, 100);
+        joystick = new Joystick(JSX, JSY, 160, 80);
         progressBar = new ProgressBar(context);
+
+        //Draw
+        final Typeface font = ResourcesCompat.getFont(context, R.font.customfont);
+        levelPaint.setColor(Color.WHITE);
+        levelPaint.setTextSize(40);
+        levelPaint.setTextAlign(Paint.Align.CENTER);
+        levelPaint.setTypeface(font);
+
+        strokePaint.setColor(Color.BLACK);
+        strokePaint.setTextSize(40);
+        strokePaint.setTextAlign(Paint.Align.CENTER);
+        strokePaint.setTypeface(font);
+        strokePaint.setStyle(Paint.Style.STROKE);
+        strokePaint.setStrokeWidth(5);
+
+        ColorFilter invincibilityFilter = new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        invincibilityPaint.setColorFilter(invincibilityFilter);
 
         // Initialize game objects
         SpriteSheet spriteSheet = new SpriteSheet(context);
         CharacterList characterList = new CharacterList(context);
-        TankAnimator tankAnimator = new TankAnimator(context);
-        healerAnimator = new HealerAnimator(context);
         enemyAnimator = new EnemyAnimator(context);
-        damageAnimator = new DamageAnimator(context);
-        player = new Player(context, joystick, 0, 0, 75, tankAnimator, damageAnimator, healerAnimator, progressBar);
-        tankShield = new TankShield(context, player, 0, 0, 125);
-        tankKnockBack = new TankKnockBack(context, player, 0, 0, 400);
-        healerFreeze = new HealerFreeze(context, player, 0, 0, 100);
-        levelUp = new LevelUp(context, tankAnimator, damageAnimator, healerAnimator, player);
+        player = new Player(context, joystick, 0, 0, 75, progressBar);
+        levelUp = new LevelUp(context, player);
         bronzeCoin = new BronzeCoin(getContext(), player, 0, 0, 20);
+        spike = new Spike(getContext(), player, 0, 0, 25);
         silverCoin = new SilverCoin(getContext(), player, 0, 0, 20);
         goldCoin = new GoldCoin(getContext(), player, 0, 0, 20);
-        damageExplosion = new DamageExplosion(context, player, 0,0, 125);
         enemy = new Enemy(getContext(), player, 0, 0, 30, enemyAnimator, 1);
 
         // Initialize display and center it around the player
         ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         gameDisplay = new GameDisplay(displayMetrics.widthPixels, displayMetrics.heightPixels, player);
-        screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-        screenHeight = context.getResources().getDisplayMetrics().heightPixels;
 
         map = new Map(context);
         pauseButton = new PauseButton(context, player);
         timeAlive = new TimeAlive(context);
+
+        //Selection Booleans
+        damageHeroSelected = ((GameActivity)getContext()).damageHeroSelected;
+        healerHeroSelected = ((GameActivity)getContext()).healerHeroSelected;
+        tankHeroSelected = ((GameActivity)getContext()).tankHeroSelected;
+        perlaHeroSelected = ((GameActivity)getContext()).perlaHeroSelected;
+        alfredHeroSelected = ((GameActivity)getContext()).alfredHeroSelected;
+        erinaHeroSelected = ((GameActivity)getContext()).erinaHeroSelected;
+
+        //Selected Heroes
+        if (healerHeroSelected){ healerHero = new Healer(context, screenWidth, screenHeight, player, this); }
+        if (tankHeroSelected){ tankHero = new Tank(context, screenWidth, screenHeight, player, this); }
+        if (perlaHeroSelected){ perlaHero = new Perla(context, screenWidth, screenHeight, player); }
+        if (alfredHeroSelected){ alfredHero = new Alfred(context, screenWidth, screenHeight, player); }
+
+        if (damageHeroSelected){
+            damageHero = new Damage(context, screenWidth, screenHeight, player);
+        }
+        if (erinaHeroSelected){
+            erinaHero = new Erina(context, screenWidth, screenHeight, player, this);
+        }
 
         setFocusable(true);
 
@@ -272,27 +290,24 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
+        if (player.invincibilityMode){ selectedPaint = invincibilityPaint; }
+        if (!player.invincibilityMode){ selectedPaint = null; }
+
         map.draw(canvas, player);
-        tankKnockBack.drawTankKnockBack(canvas);
-        healerFreeze.drawHealerFreeze(canvas, gameDisplay);
 
         // Draw game objects
         player.draw(canvas, gameDisplay);
 
+        //Draw Selected Heroes
+        if (damageHeroSelected){ damageHero.draw(canvas, player, selectedPaint, levelPaint, strokePaint, gameDisplay); }
+        if (healerHeroSelected){ healerHero.draw(canvas, player, selectedPaint, levelPaint, strokePaint, gameDisplay); }
+        if (tankHeroSelected){ tankHero.draw(canvas, player, selectedPaint, levelPaint, strokePaint, gameDisplay); }
+        if (perlaHeroSelected){ perlaHero.draw(canvas, player, selectedPaint, levelPaint, strokePaint, gameDisplay); }
+        if (alfredHeroSelected){ alfredHero.draw(canvas, player, selectedPaint, levelPaint, strokePaint, gameDisplay); }
+        if (erinaHeroSelected){ erinaHero.draw(canvas, player, selectedPaint, levelPaint, strokePaint, gameDisplay); }
+
         for (Enemy enemy : enemyAnimator.enemyList) {
             enemy.drawEnemy(canvas, gameDisplay);
-        }
-
-        for (Spell spell : spellList) {
-            spell.drawArrow(canvas, gameDisplay);
-        }
-
-        for (DamageGodArrow godArrow : godArrowList){
-            godArrow.drawArrow(canvas, gameDisplay);
-        }
-
-        for (DamageExplosive explosive : explosiveList){
-            explosive.drawArrow(canvas, gameDisplay);
         }
 
         for (BronzeCoin coin : bronzeCoinList){
@@ -307,7 +322,9 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
             coin.drawCoin(canvas, gameDisplay);
         }
 
-        damageExplosion.drawExplosion(canvas);
+        for (Spike spike : spikeList){
+            spike.drawSpike(canvas, gameDisplay);
+        }
 
         // Draw game panels
         joystick.draw(canvas);
@@ -315,7 +332,6 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         progressBar.draw(canvas);
         pauseButton.draw(canvas, touchX, touchY);
 
-        tankShield.drawTankShield(canvas);
         timeAlive.drawTime(canvas);
         player.healthBar.draw(canvas, gameDisplay);
 
@@ -326,6 +342,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         if (pauseButton.isClicked(touchX, touchY) && player.getHealthPoint() > 0){
             paused.draw(canvas);
+            pausedCanvas = canvas;
             isPaused = true;
             isPausedButton = true;
             pause();
@@ -334,7 +351,35 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         if (progressBar.levelUpped){
             touchX = 0;
             touchY = 0;
-            levelUp.draw(canvas);
+
+            if (damageHeroSelected) {
+                damageHero.getLevelUpText(player.damageLevel);
+                dpsText = damageHero.levelUpMsg;
+            }
+            if (erinaHeroSelected) {
+                erinaHero.getLevelUpText(player.damageLevel);
+                dpsText = erinaHero.levelUpMsg;
+            }
+
+            if (healerHeroSelected) {
+                healerHero.getLevelUpText(player.healerLevel);
+                healerText = healerHero.levelUpMsg;
+            }
+            if (perlaHeroSelected) {
+                perlaHero.getLevelUpText(player.healerLevel);
+                healerText = perlaHero.levelUpMsg;
+            }
+
+            if (tankHeroSelected) {
+                tankHero.getLevelUpText(player.tankLevel);
+                tankText = tankHero.levelUpMsg;
+            }
+            if (alfredHeroSelected) {
+                alfredHero.getLevelUpText(player.tankLevel);
+                tankText = alfredHero.levelUpMsg;
+            }
+
+            levelUp.draw(canvas, dpsText, healerText, tankText);
             isPaused = true;
             pause();
         }
@@ -359,10 +404,6 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Update game state
         joystick.update(JSX, JSY);
         player.update();
-        tankShield.update();
-        tankKnockBack.update();
-        healerFreeze.update();
-        damageExplosion.update();
 
         enemyNumberTimeCounter++;
         if (enemyNumberTimeCounter >= enemy.delay){
@@ -407,78 +448,34 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         }
         if(GoldCoin.readyToSpawn()) {
             if(goldCoinList.toArray().length <= 1) {
-                goldCoinList.add(new GoldCoin(getContext(), player, silverCoin.getNewPositionX(), silverCoin.getNewPositionY(), 20));
+                goldCoinList.add(new GoldCoin(getContext(), player, goldCoin.getNewPositionX(), goldCoin.getNewPositionY(), 20));
+            }
+        }
+        if(Spike.readyToSpawn()) {
+            if(spikeList.toArray().length <= 16) {
+                spikeList.add(new Spike(getContext(), player, spike.getNewPositionX(), spike.getNewPositionY(), 25));
             }
         }
 
         bronzeCoin.update();
         silverCoin.update();
         goldCoin.update();
+        spike.update();
 
-        damageTimeCounter++;
-        if (damageTimeCounter >= damageAnimator.arrowReloadTime*UPS){
-            spellList.add(new Spell(getContext(), player));
-            arrowSoundList[(int) (Math.random()*3)].start();
-            damageTimeCounter = 0;
-        }
-        godArrowTimeCounter++;
-        if (damageAnimator.godArrowActivated){
-            if (godArrowTimeCounter >= UPS*7){
-                godArrowList.add(new DamageGodArrow(getContext(), player));
-                arrowSoundList[(int) (Math.random()*3)].start();
-                godArrowTimeCounter = 0;
-            }
-        }
-        explosiveTimeCounter++;
-        if (explosiveTimeCounter >= damageAnimator.explosiveArrowReloadTime*UPS && damageAnimator.explosiveArrowActivated){
-            explosiveList.add(new DamageExplosive(getContext(), player));
-            arrowSoundList[(int) (Math.random()*3)].start();
-            explosiveTimeCounter = 0;
-        }
+        if (healerHeroSelected) { healerHero.update(player, enemyAnimator); }
+        if (tankHeroSelected) { tankHero.update(player, enemyAnimator); }
+        if (perlaHeroSelected) { perlaHero.update(player, enemyAnimator, this); }
+        if (alfredHeroSelected) { alfredHero.update(player, enemyAnimator, this); }
 
-        healTimeCounter++;
-        if (healTimeCounter >= healerAnimator.healCoolDown*UPS && player.getHealthPoint() < player.MAX_HEALTH_POINTS) {
-            player.setHealthPoint(player.getHealthPoint()+healerAnimator.healAmount);
-            if (player.getHealthPoint() > player.MAX_HEALTH_POINTS){
-                player.setHealthPoint(player.MAX_HEALTH_POINTS);
-            } else {
-                healSoundPlayer.start();
-            }
-            healTimeCounter = 0;
+        if (damageHeroSelected) {
+            damageHero.update(player, enemyAnimator, this);
+            dpsDamage = damageHero.baseArrowDamage;
+            dpsReloadTime = damageHero.baseArrowReloadTime;
         }
-        bigHealTimeCounter++;
-        if (bigHealTimeCounter >= healerAnimator.bigHealCoolDown*UPS && player.getHealthPoint() < player.MAX_HEALTH_POINTS && healerAnimator.bigHealActivated) {
-            player.setHealthPoint(player.getHealthPoint()+player.MAX_HEALTH_POINTS/2);
-            if (player.getHealthPoint() > player.MAX_HEALTH_POINTS){
-                player.setHealthPoint(player.MAX_HEALTH_POINTS);
-            } else {
-                bigHealSoundPlayer.start();
-            }
-            bigHealTimeCounter = 0;
-        }
-
-        for (Spell spell : spellList) {
-            if (!spell.foundEnemy){
-                spell.getClosestEnemy(enemyAnimator.enemyList, player);
-            }
-            spell.update();
-            damageAnimator.bowAngle = spell.getArrowAngle();
-        }
-        if (damageAnimator.godArrowActivated){
-            for (DamageGodArrow godArrow : godArrowList) {
-                if(!godArrow.foundEnemy){
-                    godArrow.getClosestEnemy(enemyAnimator.enemyList, player);
-                }
-                godArrow.update();
-                damageAnimator.bowAngle = godArrow.getArrowAngle();
-            }
-        }
-        for (DamageExplosive explosive : explosiveList) {
-            if(!explosive.foundEnemy){
-                explosive.getClosestEnemy(enemyAnimator.enemyList, player);
-            }
-            explosive.update();
-            damageAnimator.bowAngle = explosive.getArrowAngle();
+        if (erinaHeroSelected) {
+            erinaHero.update(player, enemyAnimator);
+            dpsDamage = erinaHero.baseBulletDamage;
+            dpsReloadTime = erinaHero.baseBulletCD;
         }
 
         // Iterate through enemyList and Check for collision between each enemy and the player and
@@ -492,36 +489,13 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 enemy.finishedDying = false;
                 continue;
             }
-            if (tankShield.activated){
-                if (Circle.isColliding(enemy, tankShield)) {
-                    // Remove enemy if it collides with the player
-                    tankShield.checkShield();
-                    iteratorEnemy.remove();
-                    totalEnemiesDefeated++;
-                    continue;
-                }
-            }
             if (Circle.isColliding(enemy, player)) {
                 // Remove enemy if it collides with the player
                 iteratorEnemy.remove();
                 totalEnemiesDefeated++;
                 if (player.toggleInvincible){
                 } else {
-                    player.setHealthPoint(player.getHealthPoint() - enemy.damage);
-                }
-                continue;
-            }
-            if (tankKnockBack.activated && Circle.isColliding(enemy, tankKnockBack)) {
-                enemy.knockedBack = true;
-                if (tankKnockBack.improvedKnockBack){
-                    enemy.hitPoints--;
-                }
-                continue;
-            }
-            if (healerFreeze.activated && Circle.isColliding(enemy, healerFreeze) && !enemy.frozen){
-                enemy.frozen = true;
-                if (healerFreeze.improvedFreeze){
-                    enemy.hitPoints--;
+                    player.setHealthPoint(player.getHealthPoint() - enemy.damage*reductionRatio);
                 }
                 continue;
             }
@@ -530,66 +504,6 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                     enemy.getPositionY() >= player.getPositionY()+screenHeight ||
                     enemy.getPositionY() <= player.getPositionY()-screenHeight){
                 enemy.hitPoints -= enemy.hitPoints;
-                continue;
-            }
-
-            Iterator<Spell> iteratorSpell = spellList.iterator();
-            while (iteratorSpell.hasNext()) {
-                Circle spell = iteratorSpell.next();
-                // Remove enemy if it collides with a spell
-                if (Circle.isColliding(spell, enemy)) {
-                    iteratorSpell.remove();
-                    enemy.hitPoints -= damageAnimator.arrowDamage;
-                    break;
-                }
-                if (spell.getPositionX() >= player.getPositionX()+screenWidth ||
-                        spell.getPositionX() <= player.getPositionX()-screenWidth ||
-                        spell.getPositionY() >= player.getPositionY()+screenHeight ||
-                        spell.getPositionY() <= player.getPositionY()-screenHeight){
-                    iteratorSpell.remove();
-                    break;
-                }
-            }
-
-            Iterator<DamageGodArrow> iteratorGodArrow = godArrowList.iterator();
-            while (iteratorGodArrow.hasNext()) {
-                Circle godArrow = iteratorGodArrow.next();
-                // Remove enemy if it collides with a spell
-                if (Circle.isColliding(godArrow, enemy)) {
-                    enemy.hitPoints -= damageAnimator.arrowDamage*3;
-                    break;
-                }
-                if (godArrow.getPositionX() >= player.getPositionX()+screenWidth ||
-                        godArrow.getPositionX() <= player.getPositionX()-screenWidth ||
-                        godArrow.getPositionY() >= player.getPositionY()+screenHeight ||
-                        godArrow.getPositionY() <= player.getPositionY()-screenHeight){
-                    iteratorGodArrow.remove();
-                    break;
-                }
-            }
-
-            Iterator<DamageExplosive> iteratorExplosive = explosiveList.iterator();
-            while (iteratorExplosive.hasNext()) {
-                Circle explosive = iteratorExplosive.next();
-                // Remove enemy if it collides with a spell
-                if (Circle.isColliding(explosive, enemy)) {
-                    explosionSoundPlayer.start();
-                    damageExplosion.getExplosionPosition((int)enemy.getPositionX(), (int)enemy.getPositionY());
-                    iteratorExplosive.remove();
-                    break;
-                }
-                if (explosive.getPositionX() >= player.getPositionX()+screenWidth ||
-                        explosive.getPositionX() <= player.getPositionX()-screenWidth ||
-                        explosive.getPositionY() >= player.getPositionY()+screenHeight ||
-                        explosive.getPositionY() <= player.getPositionY()-screenHeight){
-                    iteratorExplosive.remove();
-                    break;
-                }
-            }
-            if (damageExplosion.activated){
-                if (Circle.isColliding(enemy, damageExplosion)){
-                    enemy.hitPoints -= damageAnimator.arrowDamage*2;
-                }
             }
         }
 
@@ -601,7 +515,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 // Remove enemy if it collides with the player
                 iteratorBronzeCoin.remove();
                 progressBar.setProgressPoints(progressBar.getProgressPoints() + 1);
-                bronzeCoinSoundPlayer.start();
+                if (!sfxMuted) { bronzeCoinSoundPlayer.start(); }
                 totalCoinsCollected++;
                 totalEXPGained += 1;
                 continue;
@@ -621,7 +535,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 // Remove enemy if it collides with the player
                 iteratorSilverCoin.remove();
                 progressBar.setProgressPoints(progressBar.getProgressPoints() + 3);
-                silverCoinSoundPlayer.start();
+                if (!sfxMuted) { silverCoinSoundPlayer.start(); }
                 totalCoinsCollected++;
                 totalEXPGained += 2;
                 continue;
@@ -641,7 +555,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 // Remove enemy if it collides with the player
                 iteratorGoldCoin.remove();
                 progressBar.setProgressPoints(progressBar.getProgressPoints() + 10);
-                goldCoinSoundPlayer.start();
+                if (!sfxMuted) { goldCoinSoundPlayer.start(); }
                 totalCoinsCollected++;
                 totalEXPGained += 3;
                 continue;
@@ -651,6 +565,24 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                     coin.getPositionY() >= player.getPositionY()+screenHeight*1.5 ||
                     coin.getPositionY() <= player.getPositionY()-screenHeight*1.5){
                 iteratorGoldCoin.remove();
+                break;
+            }
+        }
+        Iterator<Spike> spikeIterator = spikeList.iterator();
+        while (spikeIterator.hasNext()) {
+            Circle spike = spikeIterator.next();
+            if (Circle.isColliding(spike, player)) {
+                // Remove enemy if it collides with the player
+                spikeIterator.remove();
+                if (!sfxMuted) { goldCoinSoundPlayer.start(); }
+                player.setHealthPoint(player.getHealthPoint()-20);
+                continue;
+            }
+            if (spike.getPositionX() >= player.getPositionX()+screenWidth*4 ||
+                    spike.getPositionX() <= player.getPositionX()-screenWidth*4 ||
+                    spike.getPositionY() >= player.getPositionY()+screenHeight*2 ||
+                    spike.getPositionY() <= player.getPositionY()-screenHeight*2){
+                spikeIterator.remove();
                 break;
             }
         }
@@ -676,13 +608,36 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 resume();
                 isPausedButton = false;
             }
+            if (paused.musicSoundClicked(touchX, touchY)) {
+                paused.musicMuted = !paused.musicMuted;
+                ((GameActivity)getContext()).muteMusic();
+                touchX = 0;
+                touchY = 0;
+                gameLoop.pausedDrawRequest = true;
+                SharedPreferences settings = getContext().getSharedPreferences("settings", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putBoolean("musicMuted", paused.musicMuted);
+                editor.apply();
+            }
+            if (paused.sfxSoundClicked(touchX, touchY)) {
+                paused.sfxMuted = !paused.sfxMuted;
+                this.sfxMuted = paused.sfxMuted;
+                touchX = 0;
+                touchY = 0;
+                gameLoop.pausedDrawRequest = true;
+                SharedPreferences settings = getContext().getSharedPreferences("settings", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putBoolean("sfxMuted", paused.sfxMuted);
+                editor.apply();
+            }
         }
         if (isPaused){
             if (progressBar.levelUpped) {
                 if (levelUp.optionOneClicked(touchX, touchY)){
                     resume();
                     isPaused = false;
-                    damageAnimator.checkLevelPerks(player.damageLevel);
+                    if (damageHeroSelected){ damageHero.checkLevelPerks(player.damageLevel); }
+                    if (erinaHeroSelected){ erinaHero.checkLevelPerks(player.damageLevel); }
                     player.damageLevel++;
                     progressBar.levelUpped = false;
                     player.toggleInvincible = true;
@@ -690,14 +645,8 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 if (levelUp.optionTwoClicked(touchX, touchY)){
                     resume();
                     isPaused = false;
-                    if (player.tankLevel >= 10){
-                        player.MAX_HEALTH_POINTS += 3;
-                        player.setHealthPoint(player.getHealthPoint()+3);
-                    } else {
-                        player.MAX_HEALTH_POINTS += 5;
-                        player.setHealthPoint(player.getHealthPoint()+5);
-                    }
-                    Log.i("HP", String.valueOf(player.MAX_HEALTH_POINTS));
+                    if (tankHeroSelected) { tankHero.checkLevelPerks(player.tankLevel); }
+                    if (alfredHeroSelected) { alfredHero.checkLevelPerks(player.tankLevel, player, this); }
                     player.tankLevel++;
                     progressBar.levelUpped = false;
                     player.toggleInvincible = true;
@@ -705,7 +654,16 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 if (levelUp.optionThreeClicked(touchX, touchY)){
                     resume();
                     isPaused = false;
-                    healerAnimator.checkLevelPerks(player.healerLevel);
+                    if (healerHeroSelected){ healerHero.checkLevelPerks(player.healerLevel); }
+                    if (perlaHeroSelected){ perlaHero.checkLevelPerks(player.healerLevel, this); }
+                    if (damageHeroSelected){
+                        damageHero.arrowDamage = dpsDamage;
+                        damageHero.arrowReloadTime = dpsReloadTime;
+                    }
+                    if (erinaHeroSelected){
+                        erinaHero.bulletDamage = dpsDamage;
+                        erinaHero.bulletCD = dpsReloadTime;
+                    }
                     player.healerLevel++;
                     progressBar.levelUpped = false;
                     player.toggleInvincible = true;
@@ -773,7 +731,9 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         if (player.getHealthPoint() <= 0) {
             gameLoop.pauseLoop();
             SharedPreferences prefs = getContext().getSharedPreferences("highScores", Context.MODE_PRIVATE);
+            SharedPreferences characters = getContext().getSharedPreferences("characters", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
+            SharedPreferences.Editor charEditor = characters.edit();
 
             int highestMin = prefs.getInt("highScoreMin", 0);
             int highestSec = prefs.getInt("highScoreSec", 0);
@@ -782,6 +742,9 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 editor.putInt("highScoreSec", timeAlive.finalSeconds);
                 PlayGames.getLeaderboardsClient(gameActivity)
                         .submitScore(getResources().getString(R.string.leaderboard_id), (timeAlive.minutes*60 + timeAlive.finalSeconds)*1000);
+                if (timeAlive.minutes >= 7){
+                    charEditor.putBoolean("perla", true);
+                }
             }
 
             int totalEnemies = prefs.getInt("totalEnemiesDefeated", 0);
@@ -813,6 +776,14 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 editor.putInt("highestCombinedLevel", player.damageLevel+player.healerLevel+player.tankLevel);
             }
             editor.apply();
+
+            if (prefs.getInt("totalEXPGained", 0) >= 500){
+                charEditor.putBoolean("alfred", true);
+            }
+            if (prefs.getInt("totalEnemiesDefeated", 0) >= 15000){
+                charEditor.putBoolean("erina", true);
+            }
+            charEditor.apply();
         }
         if (isPausedButton) {
             if (paused.quitButtonClicked(touchX, touchY)){

@@ -1,4 +1,4 @@
-package com.prestige.prestigegame.gameobject;
+package com.prestige.prestigegame.heroes.tank;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,10 +12,13 @@ import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
+import com.prestige.prestigegame.Game;
 import com.prestige.prestigegame.GameDisplay;
 import com.prestige.prestigegame.GameLoop;
 import com.prestige.prestigegame.R;
 import com.prestige.prestigegame.Utils;
+import com.prestige.prestigegame.gameobject.Circle;
+import com.prestige.prestigegame.gameobject.Player;
 import com.prestige.prestigegame.graphics.CharacterList;
 
 import java.util.Timer;
@@ -25,7 +28,7 @@ import java.util.TimerTask;
  * Enemy is a character which always moves in the direction of the player.
  * The Enemy class is an extension of a Circle, which is an extension of a GameObject
  */
-public class TankKnockBack extends Circle {
+public class KnockBack extends Circle {
     MediaPlayer knockBackSoundPlayer;
     private Player player;
     private int screenWidth;
@@ -45,10 +48,12 @@ public class TankKnockBack extends Circle {
     private final double initialDelay = UPS*15;
     private double newDelay;
     public boolean improvedKnockBack = false;
+    private Game game;
 
-    public TankKnockBack(Context context, Player player, double positionX, double positionY, double radius) {
+    public KnockBack(Context context, Player player, double positionX, double positionY, double radius, Game game) {
         super(context, ContextCompat.getColor(context, R.color.coin), positionX, positionY, radius);
         this.player = player;
+        this.game = game;
 
         knockBackSoundPlayer = MediaPlayer.create(context, R.raw.knockback);
 
@@ -100,7 +105,7 @@ public class TankKnockBack extends Circle {
         }
         if ((player.tankLevel >= 5 && timeCounter >= newDelay && !activated) || (player.tankLevel >= 5 && firstKB)){
             if (firstKB){
-                knockBackSoundPlayer.start();
+                if (!game.sfxMuted) { knockBackSoundPlayer.start(); }
                 positionX = (int) player.positionX+screenWidth/2-300;
                 positionY = (int) player.positionY+screenHeight/2-300;
                 activated = true;
@@ -119,7 +124,7 @@ public class TankKnockBack extends Circle {
     }
 
     public void setKnockBackCounter(){
-        knockBackSoundPlayer.start();
+        if (!game.sfxMuted) { knockBackSoundPlayer.start(); }
         activated = true;
         positionX = (int) player.positionX+screenWidth/2-300;
         positionY = (int) player.positionY+screenHeight/2-300;

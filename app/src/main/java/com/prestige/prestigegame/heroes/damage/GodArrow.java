@@ -1,4 +1,4 @@
-package com.prestige.prestigegame.gameobject;
+package com.prestige.prestigegame.heroes.damage;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,7 +12,10 @@ import androidx.core.content.ContextCompat;
 import com.prestige.prestigegame.GameDisplay;
 import com.prestige.prestigegame.GameLoop;
 import com.prestige.prestigegame.R;
+import com.prestige.prestigegame.gameobject.Circle;
 import com.prestige.prestigegame.gameobject.Enemy;
+import com.prestige.prestigegame.gameobject.GameObject;
+import com.prestige.prestigegame.gameobject.Player;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Collections;
 
-public class DamageGodArrow extends Circle {
+public class GodArrow extends Circle {
     public static final double SPEED_PIXELS_PER_SECOND = 30.0;
     private static final double MAX_SPEED = SPEED_PIXELS_PER_SECOND;
     private double enemyValue;
@@ -45,7 +48,7 @@ public class DamageGodArrow extends Circle {
 
     HashMap<Enemy, Double> enemyMap = new HashMap<>();
 
-    public DamageGodArrow(Context context, Player player) {
+    public GodArrow(Context context, Player player) {
         super(
                 context,
                 ContextCompat.getColor(context, R.color.spell),

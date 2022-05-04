@@ -37,8 +37,25 @@ public class ReadyActivity extends AppCompatActivity implements View.OnTouchList
     int x_cord;
     int y_cord;
     private int charactersSelected = 0;
+
+    private boolean perlaHeroUnlocked;
+    private boolean alfredHeroUnlocked;
+    private boolean erinaHeroUnlocked;
+
+    public boolean selectedDPS = false;
+    public boolean selectedSupport = false;
+    public boolean selectedTank = false;
     private View v;
     long then = 0;
+
+    //Characters
+    public static boolean damageHeroSelected = false;
+    public static boolean healerHeroSelected = false;
+    public static boolean tankHeroSelected = false;
+    public static boolean perlaHeroSelected = false;
+    public static boolean alfredHeroSelected = false;
+    public static boolean erinaHeroSelected = false;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -46,23 +63,56 @@ public class ReadyActivity extends AppCompatActivity implements View.OnTouchList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ready);
 
+
         ImageView background = (ImageView) findViewById(R.id.background);
         background.setColorFilter(ContextCompat.getColor(this, R.color.blackTint), PorterDuff.Mode.SRC_OVER);
+
+        SharedPreferences characters = this.getSharedPreferences("characters", Context.MODE_PRIVATE);
+        perlaHeroUnlocked = characters.getBoolean("perla", false);
+        alfredHeroUnlocked = characters.getBoolean("alfred", false);
+        erinaHeroUnlocked = characters.getBoolean("erina", false);
 
         ImageView dpsChar = findViewById(R.id.dpsCharacter);
         dpsChar.setTag(R.id.characterRole, 0);
         dpsChar.setTag(R.id.characterImage, R.drawable.damageidle);
         dpsChar.setOnTouchListener(this);
 
+        ImageView erinaChar = (ImageView) findViewById(R.id.erinaCharacter);
+        if (!erinaHeroUnlocked){
+            erinaChar.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark), PorterDuff.Mode.SRC_IN);
+        } else {
+            erinaChar.setTag(R.id.characterRole, 0);
+            erinaChar.setTag(R.id.characterImage, R.drawable.erina);
+            erinaChar.setOnTouchListener(this);
+        }
+
         ImageView healerChar = findViewById(R.id.healerCharacter);
         healerChar.setTag(R.id.characterRole, 1);
         healerChar.setTag(R.id.characterImage, R.drawable.healer);
         healerChar.setOnTouchListener(this);
 
+        ImageView perlaChar = (ImageView) findViewById(R.id.perlaCharacter);
+        if (!perlaHeroUnlocked){
+            perlaChar.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark), PorterDuff.Mode.SRC_IN);
+        } else {
+            perlaChar.setTag(R.id.characterRole, 1);
+            perlaChar.setTag(R.id.characterImage, R.drawable.perla);
+            perlaChar.setOnTouchListener(this);
+        }
+
         ImageView tankChar = findViewById(R.id.tankCharacter);
         tankChar.setTag(R.id.characterRole, 2);
         tankChar.setTag(R.id.characterImage, R.drawable.tank);
         tankChar.setOnTouchListener(this);
+
+        ImageView alfredChar = (ImageView) findViewById(R.id.alfredCharacter);
+        if (!alfredHeroUnlocked){
+            alfredChar.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark), PorterDuff.Mode.SRC_IN);
+        } else {
+            alfredChar.setTag(R.id.characterRole, 2);
+            alfredChar.setTag(R.id.characterImage, R.drawable.alfred);
+            alfredChar.setOnTouchListener(this);
+        }
     }
 
     @Override
@@ -74,21 +124,46 @@ public class ReadyActivity extends AppCompatActivity implements View.OnTouchList
                 int newImage = Integer.parseInt(String.valueOf(v.getTag(R.id.characterImage)));
                 int chosenRole = Integer.parseInt(String.valueOf(v.getTag(R.id.characterRole)));
                 if (chosenRole == 0){
-                    charactersSelected++;
+                    selectedDPS = true;
                     ImageView frame = (ImageView) findViewById(R.id.dpsFrame);
                     frame.setBackgroundResource(newImage);
+                    if (newImage == R.drawable.damageidle){
+                        damageHeroSelected = true;
+                        erinaHeroSelected = false;
+
+                    }
+                    if (newImage == R.drawable.erina){
+                        damageHeroSelected = false;
+                        erinaHeroSelected = true;
+                    }
                     return true;
                 }
                 if (chosenRole == 1){
-                    charactersSelected++;
+                    selectedSupport = true;
                     ImageView frame = (ImageView) findViewById(R.id.healerFrame);
                     frame.setBackgroundResource(newImage);
+                    if (newImage == R.drawable.perla){
+                        perlaHeroSelected = true;
+                        healerHeroSelected = false;
+                    }
+                    if (newImage == R.drawable.healer){
+                        perlaHeroSelected = false;
+                        healerHeroSelected = true;
+                    }
                     return true;
                 }
                 if (chosenRole == 2){
-                    charactersSelected++;
+                    selectedTank = true;
                     ImageView frame = (ImageView) findViewById(R.id.tankFrame);
                     frame.setBackgroundResource(newImage);
+                    if (newImage == R.drawable.tank){
+                        alfredHeroSelected = false;
+                        tankHeroSelected = true;
+                    }
+                    if (newImage == R.drawable.alfred){
+                        alfredHeroSelected = true;
+                        tankHeroSelected = false;
+                    }
                     return true;
                 }
         }
@@ -115,7 +190,7 @@ public class ReadyActivity extends AppCompatActivity implements View.OnTouchList
     }
 
     public void startButtonClick(View view){
-        if (charactersSelected < 3){
+        if (!selectedDPS || !selectedSupport || !selectedTank){
             Toast.makeText(this, "Please select ALL 3 heroes!", Toast.LENGTH_SHORT).show();
         } else {
             startActivity(new Intent(ReadyActivity.this, GameActivity.class));

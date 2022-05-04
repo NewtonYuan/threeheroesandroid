@@ -1,4 +1,4 @@
-package com.prestige.prestigegame.gameobject;
+package com.prestige.prestigegame.heroes.healer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,20 +12,19 @@ import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
+import com.prestige.prestigegame.Game;
 import com.prestige.prestigegame.GameDisplay;
 import com.prestige.prestigegame.GameLoop;
 import com.prestige.prestigegame.R;
 import com.prestige.prestigegame.Utils;
+import com.prestige.prestigegame.gameobject.Circle;
+import com.prestige.prestigegame.gameobject.Player;
 import com.prestige.prestigegame.graphics.CharacterList;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * Enemy is a character which always moves in the direction of the player.
- * The Enemy class is an extension of a Circle, which is an extension of a GameObject
- */
-public class HealerFreeze extends Circle {
+public class Freeze extends Circle {
     MediaPlayer freezeSoundPlayer;
     private Player player;
     private int screenWidth;
@@ -46,10 +45,12 @@ public class HealerFreeze extends Circle {
     private double newDelay;
     private double angle;
     public boolean improvedFreeze = false;
+    private Game game;
 
-    public HealerFreeze(Context context, Player player, double positionX, double positionY, double radius) {
+    public Freeze(Context context, Player player, double positionX, double positionY, double radius, Game game) {
         super(context, ContextCompat.getColor(context, R.color.coin), positionX, positionY, radius);
         this.player = player;
+        this.game = game;
 
         freezeSoundPlayer = MediaPlayer.create(context, R.raw.freeze);
 
@@ -85,7 +86,7 @@ public class HealerFreeze extends Circle {
 
     public void update() {
         timeCounter++;
-        if (player.tankLevel <= 10){
+        if (player.healerLevel <= 10){
             newDelay = initialDelay-player.healerLevel*UPS;
         } else {
             newDelay = initialDelay-10*UPS;
@@ -96,9 +97,10 @@ public class HealerFreeze extends Circle {
                 activated = true;
                 firstFreeze = false;
                 timeCounter = 0;
-                freezeSoundPlayer.start();
+                if (!game.sfxMuted) { freezeSoundPlayer.start(); }
             } else {
                 setKnockBackCounter();
+                if (!game.sfxMuted) { freezeSoundPlayer.start(); }
             }
         }
         if (player.healerLevel >= 10 && !improvedFreeze){
@@ -110,7 +112,6 @@ public class HealerFreeze extends Circle {
     }
 
     public void setKnockBackCounter(){
-        freezeSoundPlayer.start();
         activated = true;
         timeCounter = 0;
     }
